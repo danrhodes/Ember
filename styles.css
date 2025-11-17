@@ -1,0 +1,1497 @@
+/**
+ * Ember Plugin Styles
+ *
+ * Visual heat effects for notes based on usage patterns
+ */
+
+/* ===== CSS Custom Properties ===== */
+:root {
+	/* Default colors (will be overridden by settings) */
+	--ember-hot-color: #dc2626;
+	--ember-cold-color: #3b82f6;
+	--ember-opacity: 0.7;
+	--ember-transition-duration: 300ms;
+}
+
+/* ===== Base Ember File Styling ===== */
+.ember-file {
+	position: relative;
+	transition:
+		color var(--ember-transition-duration) ease,
+		background-color var(--ember-transition-duration) ease,
+		opacity var(--ember-transition-duration) ease;
+}
+
+/* ===== Standard Mode: Hot Files ===== */
+.ember-file.ember-hot {
+	color: var(--ember-hot-color) !important;
+	font-weight: 500;
+}
+
+.ember-file.ember-hot::before {
+	content: '';
+	position: absolute;
+	left: -4px;
+	top: 50%;
+	transform: translateY(-50%);
+	width: 3px;
+	height: calc(var(--ember-heat-intensity, 50) * 0.8%);
+	background: var(--ember-hot-color);
+	border-radius: 2px;
+	opacity: calc(var(--ember-opacity) * (var(--ember-heat-intensity, 50) / 100));
+	transition: all var(--ember-transition-duration) ease;
+}
+
+/* Glow effect for very hot files */
+.ember-file.ember-hot[style*="--ember-heat-intensity: 100"],
+.ember-file.ember-hot[style*="--ember-heat-intensity: 9"] {
+	text-shadow: 0 0 8px var(--ember-hot-color);
+}
+
+/* ===== Standard Mode: Cold Files ===== */
+.ember-file.ember-cold {
+	color: var(--ember-cold-color) !important;
+	opacity: calc(1 - (var(--ember-heat-intensity, 50) / 200));
+}
+
+.ember-file.ember-cold::before {
+	content: '';
+	position: absolute;
+	left: -4px;
+	top: 50%;
+	transform: translateY(-50%);
+	width: 3px;
+	height: calc(var(--ember-heat-intensity, 50) * 0.5%);
+	background: var(--ember-cold-color);
+	border-radius: 2px;
+	opacity: calc(var(--ember-opacity) * 0.5 * (var(--ember-heat-intensity, 50) / 100));
+	transition: all var(--ember-transition-duration) ease;
+}
+
+/* ===== Standard Mode: Neutral Files ===== */
+.ember-file.ember-neutral {
+	/* No special styling - maintains default appearance */
+	opacity: 1;
+}
+
+/* ===== Emergence Mode: Full Gradient ===== */
+/* Shows smooth gradient coloring across all files based on heat score */
+.ember-file.ember-emergence {
+	position: relative;
+	/* Text color is set dynamically via inline style using gradient calculation */
+	transition:
+		color var(--ember-transition-duration) ease,
+		font-weight var(--ember-transition-duration) ease;
+}
+
+/* Gradient indicator bar */
+.ember-file.ember-emergence::before {
+	content: '';
+	position: absolute;
+	left: -4px;
+	top: 50%;
+	transform: translateY(-50%);
+	width: 3px;
+	height: 80%;
+	background: linear-gradient(
+		to top,
+		#3b82f6,
+		#10b981,
+		#fbbf24,
+		#f59e0b,
+		#dc2626
+	);
+	background-position: 0 calc(100% - var(--ember-heat-score, 0) * 1%);
+	background-size: 100% 500%;
+	border-radius: 2px;
+	opacity: var(--ember-opacity);
+	transition: all var(--ember-transition-duration) ease;
+}
+
+/* Subtle glow for very hot files in Emergence mode */
+.ember-file.ember-emergence[style*="--ember-heat-score: 9"],
+.ember-file.ember-emergence[style*="--ember-heat-score: 10"] {
+	text-shadow: 0 0 6px var(--ember-gradient-color);
+}
+
+/* Active file background in Emergence mode */
+.tree-item-self.is-active.ember-file.ember-emergence {
+	background-color: rgba(var(--ember-gradient-color), 0.08);
+}
+
+/* Hover effects in Emergence mode */
+.tree-item-self.ember-file.ember-emergence:hover {
+	background-color: rgba(var(--ember-gradient-color), 0.05);
+}
+
+/* ===== Tab Header Styling ===== */
+.workspace-tab-header.ember-file.ember-hot {
+	border-bottom: 2px solid var(--ember-hot-color);
+}
+
+.workspace-tab-header.ember-file.ember-cold {
+	border-bottom: 2px solid var(--ember-cold-color);
+	opacity: 0.7;
+}
+
+.workspace-tab-header.ember-file.ember-emergence {
+	border-bottom: 2px solid var(--ember-gradient-color);
+}
+
+/* ===== File Explorer Tweaks ===== */
+/* Ensure ember indicator doesn't overlap with collapse icon */
+.tree-item-self.ember-file::before {
+	left: 0;
+	margin-left: 2px;
+}
+
+/* Active file styling */
+.tree-item-self.is-active.ember-file.ember-hot {
+	background-color: rgba(220, 38, 38, 0.1);
+}
+
+.tree-item-self.is-active.ember-file.ember-cold {
+	background-color: rgba(59, 130, 246, 0.05);
+}
+
+/* Hover effects */
+.tree-item-self.ember-file.ember-hot:hover {
+	background-color: rgba(220, 38, 38, 0.08);
+}
+
+.tree-item-self.ember-file.ember-cold:hover {
+	background-color: rgba(59, 130, 246, 0.05);
+}
+
+/* ===== Favorite Indicator ===== */
+/* Phase 2 feature - will be enhanced with context menu */
+.ember-file[data-favorite="true"]::after {
+	content: '★';
+	margin-left: 4px;
+	color: #fbbf24;
+	font-size: 0.8em;
+	opacity: 0.8;
+}
+
+/* ===== Animations ===== */
+/* Pulse animation for files gaining heat */
+@keyframes ember-pulse {
+	0%, 100% {
+		opacity: var(--ember-opacity);
+	}
+	50% {
+		opacity: calc(var(--ember-opacity) * 1.5);
+	}
+}
+
+.ember-file.ember-hot.ember-heating {
+	animation: ember-pulse 1s ease-in-out;
+}
+
+/* ===== Accessibility & Theme Compatibility ===== */
+/* Respect user's motion preferences */
+@media (prefers-reduced-motion: reduce) {
+	.ember-file,
+	.ember-file::before,
+	.ember-editor {
+		transition: none;
+		animation: none;
+	}
+}
+
+/* Dark theme adjustments */
+.theme-dark .ember-file.ember-hot {
+	color: #f87171 !important; /* Lighter red for dark mode */
+}
+
+.theme-dark .ember-file.ember-cold {
+	color: #60a5fa !important; /* Lighter blue for dark mode */
+}
+
+/* Light theme adjustments */
+.theme-light .ember-file.ember-hot {
+	color: #dc2626 !important; /* Standard red for light mode */
+}
+
+.theme-light .ember-file.ember-cold {
+	color: #2563eb !important; /* Darker blue for light mode */
+}
+
+/* ===== Debug Mode ===== */
+/* Shows heat score on hover when debug mode enabled */
+.ember-debug .ember-file:hover::after {
+	content: attr(data-heat-score);
+	position: absolute;
+	right: 0;
+	background: var(--background-modifier-cover);
+	padding: 2px 6px;
+	border-radius: 4px;
+	font-size: 0.8em;
+	opacity: 0.9;
+	z-index: 10;
+}
+
+/* ===== Popular Files Panel ===== */
+.ember-popular-files-panel {
+	padding: 12px;
+	height: 100%;
+	overflow-y: auto;
+}
+
+.ember-panel-header {
+	margin-bottom: 16px;
+	padding-bottom: 12px;
+	border-bottom: 1px solid var(--background-modifier-border);
+}
+
+.ember-panel-header h4 {
+	margin: 0 0 4px 0;
+	font-size: 1.1em;
+	font-weight: 600;
+}
+
+.ember-panel-subtitle {
+	font-size: 0.85em;
+	color: var(--text-muted);
+}
+
+.ember-empty-state {
+	text-align: center;
+	padding: 40px 20px;
+	color: var(--text-muted);
+	animation: ember-fade-in 0.4s ease;
+}
+
+.ember-empty-state h3 {
+	margin: 0 0 12px 0;
+	color: var(--text-normal);
+	font-size: 1.2em;
+}
+
+.ember-empty-state p {
+	margin: 8px 0 16px 0;
+	font-style: italic;
+}
+
+.ember-empty-tips {
+	list-style: none;
+	padding: 0;
+	margin: 16px auto 0;
+	max-width: 300px;
+	text-align: left;
+}
+
+.ember-empty-tips li {
+	padding: 8px 12px;
+	margin-bottom: 6px;
+	background: var(--background-secondary);
+	border-left: 3px solid var(--interactive-accent);
+	border-radius: 4px;
+	font-size: 0.9em;
+	font-style: normal;
+	animation: ember-slide-in 0.4s ease;
+}
+
+.ember-empty-tips li:nth-child(2) {
+	animation-delay: 0.1s;
+}
+
+.ember-empty-tips li:nth-child(3) {
+	animation-delay: 0.2s;
+}
+
+.ember-file-list {
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+}
+
+.ember-popular-file-item {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	padding: 8px;
+	border-radius: 6px;
+	cursor: pointer;
+	transition: all var(--ember-transition-duration) ease;
+	border: 1px solid transparent;
+}
+
+.ember-popular-file-item:hover,
+.ember-popular-file-item.ember-hover {
+	background-color: var(--background-modifier-hover);
+	border-color: var(--background-modifier-border);
+}
+
+.ember-rank-badge {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	min-width: 24px;
+	height: 24px;
+	padding: 0 6px;
+	background-color: var(--background-modifier-border);
+	border-radius: 50%;
+	font-size: 0.75em;
+	font-weight: 600;
+	color: var(--text-muted);
+}
+
+.ember-file-name {
+	flex: 1;
+	min-width: 0;
+}
+
+.ember-file-link {
+	color: var(--text-normal);
+	text-decoration: none;
+	display: block;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	font-weight: 500;
+}
+
+.ember-file-link:hover {
+	color: var(--text-accent);
+	text-decoration: underline;
+}
+
+.ember-file-stats {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	font-size: 0.85em;
+}
+
+.ember-stat-item {
+	color: var(--text-muted);
+}
+
+.ember-heat-badge {
+	display: inline-block;
+	padding: 3px 8px;
+	border-radius: 4px;
+	font-size: 0.9em;
+	font-weight: 600;
+}
+
+.ember-heat-badge.hot {
+	background-color: rgba(220, 38, 38, 0.2);
+	color: var(--ember-hot-color);
+}
+
+.ember-heat-badge.warm {
+	background-color: rgba(251, 191, 36, 0.2);
+	color: #f59e0b;
+}
+
+.ember-heat-badge.cool {
+	background-color: rgba(59, 130, 246, 0.2);
+	color: var(--ember-cold-color);
+}
+
+.ember-favorite-indicator {
+	color: #fbbf24;
+	font-size: 1.1em;
+}
+
+.ember-panel-footer {
+	margin-top: 16px;
+	padding-top: 12px;
+	border-top: 1px solid var(--background-modifier-border);
+	text-align: center;
+	color: var(--text-muted);
+}
+
+/* ===== Status Bar Widget ===== */
+.ember-status-bar {
+	font-size: 0.9em;
+	padding: 0 8px;
+	transition: color var(--ember-transition-duration) ease;
+}
+
+.ember-status-bar:hover {
+	opacity: 0.8;
+}
+
+.ember-status-bar.ember-status-hot {
+	color: var(--ember-hot-color);
+	font-weight: 500;
+}
+
+.ember-status-bar.ember-status-warm {
+	color: #f59e0b;
+}
+
+.ember-status-bar.ember-status-cool {
+	color: var(--ember-cold-color);
+}
+
+.ember-status-bar.ember-status-cold {
+	color: var(--ember-cold-color);
+	opacity: 0.7;
+}
+
+/* Heat info notice */
+.ember-heat-notice {
+	background: var(--background-primary);
+	border: 1px solid var(--background-modifier-border);
+	border-radius: 8px;
+	padding: 16px;
+	box-shadow: var(--shadow-s);
+}
+
+/* ===== Hot Files Panel ===== */
+.ember-hot-files-panel {
+	padding: 12px;
+	height: 100%;
+	overflow-y: auto;
+}
+
+.ember-hot-file-item {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	padding: 8px;
+	border-radius: 6px;
+	cursor: pointer;
+	transition: all var(--ember-transition-duration) ease;
+	border: 1px solid transparent;
+}
+
+.ember-hot-file-item:hover,
+.ember-hot-file-item.ember-hover {
+	background-color: var(--background-modifier-hover);
+	border-color: var(--background-modifier-border);
+}
+
+/* Momentum indicators */
+.ember-momentum-indicator {
+	font-size: 1.1em;
+	font-weight: 600;
+}
+
+.ember-momentum-indicator.ember-momentum-heating {
+	color: #f59e0b;
+}
+
+.ember-momentum-indicator.ember-momentum-cooling {
+	color: #60a5fa;
+}
+
+.ember-momentum-indicator.ember-momentum-stable {
+	color: var(--text-muted);
+}
+
+/* ===== Statistics Panel ===== */
+.ember-statistics-panel {
+	padding: 12px;
+	height: 100%;
+	overflow-y: auto;
+}
+
+.ember-stats-section {
+	margin-bottom: 24px;
+}
+
+.ember-stats-section h3 {
+	margin: 0 0 12px 0;
+	font-size: 1em;
+	font-weight: 600;
+	color: var(--text-normal);
+	border-bottom: 1px solid var(--background-modifier-border);
+	padding-bottom: 8px;
+}
+
+/* Stats Grid (for cards) */
+.ember-stats-grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+	gap: 12px;
+	margin-bottom: 16px;
+}
+
+/* Stat Card */
+.ember-stat-card {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	padding: 12px;
+	background: var(--background-secondary);
+	border-radius: 6px;
+	border-left: 3px solid var(--interactive-accent);
+	transition: all var(--ember-transition-duration) ease;
+}
+
+.ember-stat-card:hover {
+	background: var(--background-modifier-hover);
+}
+
+.ember-stat-icon {
+	flex-shrink: 0;
+	width: 24px;
+	height: 24px;
+	opacity: 0.7;
+}
+
+.ember-stat-content {
+	flex: 1;
+	min-width: 0;
+}
+
+.ember-stat-value {
+	font-size: 1.5em;
+	font-weight: 600;
+	color: var(--text-normal);
+	line-height: 1.2;
+}
+
+.ember-stat-label {
+	font-size: 0.85em;
+	color: var(--text-muted);
+	margin-top: 2px;
+}
+
+/* Distribution Chart */
+.ember-distribution-chart {
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+}
+
+.ember-distribution-bar {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+}
+
+.ember-distribution-label {
+	flex: 0 0 120px;
+	display: flex;
+	justify-content: space-between;
+	font-size: 0.9em;
+	color: var(--text-normal);
+}
+
+.ember-distribution-count {
+	font-weight: 600;
+	color: var(--text-muted);
+}
+
+.ember-distribution-bar-bg {
+	flex: 1;
+	height: 20px;
+	background: var(--background-secondary);
+	border-radius: 4px;
+	overflow: hidden;
+}
+
+.ember-distribution-bar-fill {
+	height: 100%;
+	transition: width 0.3s ease;
+	border-radius: 4px;
+}
+
+.ember-distribution-percentage {
+	flex: 0 0 50px;
+	text-align: right;
+	font-size: 0.85em;
+	color: var(--text-muted);
+	font-weight: 600;
+}
+
+/* Folder List */
+.ember-folder-list {
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+}
+
+.ember-folder-item {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	padding: 12px;
+	background: var(--background-secondary);
+	border-radius: 6px;
+	transition: all var(--ember-transition-duration) ease;
+}
+
+.ember-folder-item:hover {
+	background: var(--background-modifier-hover);
+}
+
+.ember-folder-info {
+	flex: 1;
+	min-width: 0;
+}
+
+.ember-folder-name {
+	font-weight: 500;
+	color: var(--text-normal);
+	font-size: 0.95em;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.ember-folder-stats {
+	font-size: 0.8em;
+	color: var(--text-muted);
+	margin-top: 2px;
+}
+
+.ember-folder-heat-bar {
+	flex: 0 0 100px;
+	height: 6px;
+	background: var(--background-modifier-border);
+	border-radius: 3px;
+	overflow: hidden;
+}
+
+.ember-folder-heat-fill {
+	height: 100%;
+	background: linear-gradient(to right, #3b82f6, #f59e0b, #dc2626);
+	border-radius: 3px;
+	transition: width 0.3s ease;
+}
+
+/* ===== Archival Settings Stats Display ===== */
+.ember-archival-stats {
+	margin-top: 20px;
+	padding: 16px;
+	background: var(--background-secondary);
+	border-radius: 8px;
+	border: 1px solid var(--background-modifier-border);
+}
+
+.ember-archival-stats h3 {
+	margin-top: 0;
+	margin-bottom: 12px;
+	font-size: 1em;
+	color: var(--text-normal);
+}
+
+.ember-stat-item {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding: 8px 0;
+	border-bottom: 1px solid var(--background-modifier-border);
+}
+
+.ember-stat-item:last-child {
+	border-bottom: none;
+}
+
+.ember-stat-label {
+	font-weight: 500;
+	color: var(--text-muted);
+}
+
+.ember-stat-value {
+	font-weight: 600;
+	color: var(--text-accent);
+}
+
+/* ===== Search Input ===== */
+.ember-search-container {
+	margin: 12px 0;
+	padding: 0 12px;
+}
+
+.ember-search-input {
+	width: 100%;
+	padding: 8px 12px;
+	background: var(--background-primary);
+	border: 1px solid var(--background-modifier-border);
+	border-radius: 4px;
+	color: var(--text-normal);
+	font-size: 0.9em;
+	transition: all 0.2s ease;
+}
+
+.ember-search-input:focus {
+	outline: none;
+	border-color: var(--interactive-accent);
+	box-shadow: 0 0 0 2px rgba(var(--interactive-accent-rgb), 0.1);
+}
+
+.ember-search-input::placeholder {
+	color: var(--text-faint);
+	font-style: italic;
+}
+
+/* ===== Advanced Filters ===== */
+.ember-filter-controls {
+	margin: 12px 0;
+	padding: 12px;
+	background: var(--background-secondary);
+	border-radius: 6px;
+}
+
+.ember-filter-toggle {
+	padding: 6px 12px;
+	background: var(--interactive-normal);
+	color: var(--text-normal);
+	border: 1px solid var(--background-modifier-border);
+	border-radius: 4px;
+	cursor: pointer;
+	font-size: 0.9em;
+	font-weight: 500;
+	transition: all 0.2s ease;
+	margin-right: 8px;
+}
+
+.ember-filter-toggle:hover {
+	background: var(--interactive-hover);
+}
+
+.ember-filter-toggle.active {
+	background: var(--interactive-accent);
+	color: var(--text-on-accent);
+	border-color: var(--interactive-accent);
+}
+
+.ember-filter-badge {
+	display: inline-block;
+	padding: 2px 8px;
+	background: var(--interactive-accent);
+	color: var(--text-on-accent);
+	border-radius: 10px;
+	font-size: 0.75em;
+	font-weight: 700;
+	margin-right: 8px;
+}
+
+.ember-quick-filters {
+	display: inline-flex;
+	gap: 6px;
+	margin: 8px 0;
+	flex-wrap: wrap;
+}
+
+.ember-quick-filter {
+	padding: 4px 10px;
+	background: var(--background-primary);
+	color: var(--text-normal);
+	border: 1px solid var(--background-modifier-border);
+	border-radius: 4px;
+	cursor: pointer;
+	font-size: 0.85em;
+	transition: all 0.2s ease;
+}
+
+.ember-quick-filter:hover {
+	background: var(--interactive-hover);
+	border-color: var(--interactive-accent);
+}
+
+.ember-quick-filter.active {
+	background: rgba(var(--interactive-accent-rgb), 0.2);
+	border-color: var(--interactive-accent);
+	color: var(--interactive-accent);
+	font-weight: 600;
+}
+
+.ember-filter-clear {
+	padding: 4px 10px;
+	background: var(--background-primary);
+	color: var(--text-error);
+	border: 1px solid var(--background-modifier-border);
+	border-radius: 4px;
+	cursor: pointer;
+	font-size: 0.85em;
+	margin-left: auto;
+	transition: all 0.2s ease;
+}
+
+.ember-filter-clear:hover {
+	background: var(--background-modifier-error);
+	border-color: var(--text-error);
+}
+
+.ember-filter-panel {
+	margin-top: 12px;
+	padding: 12px;
+	background: var(--background-primary);
+	border-radius: 4px;
+	border: 1px solid var(--background-modifier-border);
+}
+
+.ember-filter-group {
+	margin-bottom: 12px;
+}
+
+.ember-filter-group:last-child {
+	margin-bottom: 0;
+}
+
+.ember-filter-label {
+	display: block;
+	font-size: 0.85em;
+	font-weight: 600;
+	color: var(--text-normal);
+	margin-bottom: 6px;
+}
+
+.ember-filter-input,
+.ember-filter-select {
+	width: 100%;
+	padding: 6px 10px;
+	background: var(--background-primary);
+	border: 1px solid var(--background-modifier-border);
+	border-radius: 4px;
+	color: var(--text-normal);
+	font-size: 0.9em;
+	transition: all 0.2s ease;
+}
+
+.ember-filter-input:focus,
+.ember-filter-select:focus {
+	outline: none;
+	border-color: var(--interactive-accent);
+	box-shadow: 0 0 0 2px rgba(var(--interactive-accent-rgb), 0.1);
+}
+
+.ember-filter-range {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+}
+
+.ember-filter-input-small {
+	width: 80px;
+	padding: 6px 10px;
+	background: var(--background-primary);
+	border: 1px solid var(--background-modifier-border);
+	border-radius: 4px;
+	color: var(--text-normal);
+	font-size: 0.9em;
+	transition: all 0.2s ease;
+}
+
+.ember-filter-input-small:focus {
+	outline: none;
+	border-color: var(--interactive-accent);
+	box-shadow: 0 0 0 2px rgba(var(--interactive-accent-rgb), 0.1);
+}
+
+/* ===== Batch Operations ===== */
+.ember-batch-controls {
+	margin: 12px 0;
+	padding: 12px;
+	background: var(--background-secondary);
+	border-radius: 6px;
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	flex-wrap: wrap;
+}
+
+.ember-batch-toggle {
+	padding: 6px 12px;
+	background: var(--interactive-normal);
+	color: var(--text-normal);
+	border: 1px solid var(--background-modifier-border);
+	border-radius: 4px;
+	cursor: pointer;
+	font-size: 0.9em;
+	font-weight: 500;
+	transition: all 0.2s ease;
+}
+
+.ember-batch-toggle:hover {
+	background: var(--interactive-hover);
+}
+
+.ember-batch-toggle.active {
+	background: var(--interactive-accent);
+	color: var(--text-on-accent);
+	border-color: var(--interactive-accent);
+}
+
+.ember-selection-counter {
+	padding: 4px 12px;
+	background: rgba(var(--interactive-accent-rgb), 0.1);
+	color: var(--interactive-accent);
+	border-radius: 4px;
+	font-size: 0.85em;
+	font-weight: 600;
+}
+
+.ember-batch-actions {
+	display: flex;
+	gap: 8px;
+	flex-wrap: wrap;
+	margin-left: auto;
+}
+
+.ember-batch-btn {
+	padding: 6px 12px;
+	background: var(--background-primary);
+	color: var(--text-normal);
+	border: 1px solid var(--background-modifier-border);
+	border-radius: 4px;
+	cursor: pointer;
+	font-size: 0.85em;
+	transition: all 0.2s ease;
+}
+
+.ember-batch-btn:hover {
+	background: var(--interactive-hover);
+	border-color: var(--interactive-accent);
+}
+
+.ember-batch-btn:disabled {
+	opacity: 0.5;
+	cursor: not-allowed;
+}
+
+.ember-batch-select-all {
+	color: var(--interactive-accent);
+	font-weight: 500;
+}
+
+.ember-batch-clear {
+	color: var(--text-muted);
+}
+
+.ember-batch-favorite {
+	color: #fbbf24;
+	font-weight: 500;
+}
+
+.ember-batch-unfavorite {
+	color: var(--text-muted);
+}
+
+.ember-batch-reset {
+	color: #ef4444;
+	font-weight: 500;
+}
+
+.ember-file-checkbox {
+	width: 18px;
+	height: 18px;
+	margin-right: 8px;
+	cursor: pointer;
+	accent-color: var(--interactive-accent);
+	flex-shrink: 0;
+}
+
+/* Adjust file items layout when checkboxes are present */
+.ember-popular-file-item,
+.ember-hot-file-item {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+}
+
+/* ===== Enhanced Statistics Charts ===== */
+
+/* Line Chart */
+.ember-line-chart {
+	margin: 16px 0;
+	padding: 16px;
+	background: var(--background-secondary);
+	border-radius: 8px;
+}
+
+.ember-chart-area {
+	display: flex;
+	align-items: flex-end;
+	justify-content: space-between;
+	height: 140px;
+	gap: 4px;
+}
+
+.ember-chart-bar-container {
+	flex: 1;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 8px;
+}
+
+.ember-chart-bar {
+	width: 100%;
+	background: linear-gradient(to top, var(--interactive-accent), var(--interactive-accent-hover));
+	border-radius: 4px 4px 0 0;
+	position: relative;
+	transition: all 0.2s ease;
+	cursor: pointer;
+	min-height: 2px;
+}
+
+.ember-chart-bar:hover {
+	opacity: 0.8;
+	transform: translateY(-2px);
+}
+
+.ember-chart-value {
+	position: absolute;
+	top: -24px;
+	left: 50%;
+	transform: translateX(-50%);
+	font-size: 0.75em;
+	font-weight: 600;
+	color: var(--text-muted);
+	opacity: 0;
+	transition: opacity 0.2s ease;
+	white-space: nowrap;
+}
+
+.ember-chart-bar:hover .ember-chart-value {
+	opacity: 1;
+}
+
+.ember-chart-label {
+	font-size: 0.75em;
+	color: var(--text-muted);
+	text-align: center;
+}
+
+/* Activity Calendar (GitHub-style) */
+.ember-activity-calendar {
+	display: grid;
+	grid-template-columns: repeat(10, 1fr);
+	gap: 4px;
+	margin: 16px 0;
+	padding: 16px;
+	background: var(--background-secondary);
+	border-radius: 8px;
+}
+
+.ember-calendar-cell {
+	aspect-ratio: 1;
+	border-radius: 2px;
+	border: 1px solid var(--background-modifier-border);
+	transition: all 0.2s ease;
+	cursor: pointer;
+}
+
+.ember-calendar-cell:hover {
+	border-color: var(--interactive-accent);
+	transform: scale(1.1);
+}
+
+.ember-calendar-intensity-0 {
+	background: var(--background-primary);
+}
+
+.ember-calendar-intensity-1 {
+	background: rgba(59, 130, 246, 0.25);
+}
+
+.ember-calendar-intensity-2 {
+	background: rgba(59, 130, 246, 0.5);
+}
+
+.ember-calendar-intensity-3 {
+	background: rgba(59, 130, 246, 0.75);
+}
+
+.ember-calendar-intensity-4 {
+	background: rgba(59, 130, 246, 1);
+}
+
+.ember-calendar-legend {
+	display: flex;
+	align-items: center;
+	gap: 4px;
+	margin-top: 12px;
+	padding: 0 16px;
+}
+
+.ember-legend-label {
+	font-size: 0.75em;
+	color: var(--text-muted);
+	margin: 0 4px;
+}
+
+/* Hourly Activity Heatmap */
+.ember-hourly-heatmap {
+	display: grid;
+	grid-template-columns: repeat(24, 1fr);
+	gap: 2px;
+	margin: 16px 0;
+	padding: 16px;
+	background: var(--background-secondary);
+	border-radius: 8px;
+}
+
+.ember-hourly-cell {
+	aspect-ratio: 1;
+	border-radius: 2px;
+	border: 1px solid var(--background-modifier-border);
+	transition: all 0.2s ease;
+	cursor: pointer;
+	position: relative;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.ember-hourly-cell:hover {
+	border-color: var(--interactive-accent);
+	transform: scale(1.1);
+	z-index: 10;
+}
+
+.ember-hourly-intensity-0 {
+	background: var(--background-primary);
+}
+
+.ember-hourly-intensity-1 {
+	background: rgba(245, 158, 11, 0.25);
+}
+
+.ember-hourly-intensity-2 {
+	background: rgba(245, 158, 11, 0.5);
+}
+
+.ember-hourly-intensity-3 {
+	background: rgba(245, 158, 11, 0.75);
+}
+
+.ember-hourly-intensity-4 {
+	background: rgba(245, 158, 11, 1);
+}
+
+.ember-hourly-label {
+	font-size: 0.65em;
+	color: var(--text-muted);
+	font-weight: 600;
+	position: absolute;
+	bottom: -16px;
+}
+
+.ember-peak-summary {
+	margin-top: 12px;
+	padding: 12px 16px;
+	background: var(--background-primary);
+	border-radius: 6px;
+	border-left: 3px solid var(--interactive-accent);
+}
+
+.ember-peak-summary p {
+	margin: 0;
+	font-size: 0.9em;
+	color: var(--text-normal);
+	font-weight: 500;
+}
+
+/* ===== Timeline View (Historical Data Scrubbing) ===== */
+.ember-timeline-container {
+	padding: 12px;
+	height: 100%;
+	overflow-y: auto;
+}
+
+.ember-history-indicator {
+	display: inline-block;
+	margin-left: 12px;
+	padding: 4px 12px;
+	background: rgba(245, 158, 11, 0.2);
+	color: #f59e0b;
+	border-radius: 4px;
+	font-size: 0.85em;
+	font-weight: 600;
+}
+
+.ember-timeline-controls {
+	margin: 20px 0;
+	padding: 20px;
+	background: var(--background-secondary);
+	border-radius: 8px;
+}
+
+.ember-timeline-date {
+	text-align: center;
+	margin-bottom: 20px;
+}
+
+.ember-timeline-date h2 {
+	margin: 0;
+	font-size: 1.5em;
+	color: var(--text-accent);
+}
+
+.ember-timeline-slider-container {
+	margin: 20px 0;
+}
+
+.ember-timeline-slider {
+	width: 100%;
+	height: 6px;
+	border-radius: 3px;
+	background: var(--background-modifier-border);
+	outline: none;
+	-webkit-appearance: none;
+}
+
+.ember-timeline-slider::-webkit-slider-thumb {
+	-webkit-appearance: none;
+	appearance: none;
+	width: 20px;
+	height: 20px;
+	border-radius: 50%;
+	background: var(--interactive-accent);
+	cursor: pointer;
+	transition: all 0.2s ease;
+}
+
+.ember-timeline-slider::-webkit-slider-thumb:hover {
+	transform: scale(1.2);
+}
+
+.ember-timeline-slider::-moz-range-thumb {
+	width: 20px;
+	height: 20px;
+	border-radius: 50%;
+	background: var(--interactive-accent);
+	cursor: pointer;
+	border: none;
+	transition: all 0.2s ease;
+}
+
+.ember-timeline-slider::-moz-range-thumb:hover {
+	transform: scale(1.2);
+}
+
+.ember-timeline-labels {
+	display: flex;
+	justify-content: space-between;
+	margin-top: 8px;
+	font-size: 0.85em;
+	color: var(--text-muted);
+}
+
+.ember-timeline-nav {
+	display: flex;
+	gap: 8px;
+	justify-content: center;
+	margin-top: 16px;
+}
+
+.ember-timeline-nav button {
+	padding: 8px 16px;
+	background: var(--interactive-normal);
+	color: var(--text-normal);
+	border: none;
+	border-radius: 4px;
+	cursor: pointer;
+	font-size: 0.9em;
+	transition: all 0.2s ease;
+}
+
+.ember-timeline-nav button:hover {
+	background: var(--interactive-hover);
+}
+
+.ember-timeline-nav button:active {
+	background: var(--interactive-accent);
+	color: var(--text-on-accent);
+}
+
+.ember-comparison-container {
+	margin: 20px 0;
+	padding: 20px;
+	background: var(--background-secondary);
+	border-radius: 8px;
+}
+
+.ember-comparison-container h3 {
+	margin-top: 0;
+	margin-bottom: 16px;
+	color: var(--text-normal);
+}
+
+.ember-timeline-actions {
+	margin: 20px 0;
+	padding: 20px;
+	background: var(--background-secondary);
+	border-radius: 8px;
+	display: flex;
+	gap: 12px;
+	flex-wrap: wrap;
+	align-items: center;
+}
+
+.ember-timeline-actions button {
+	padding: 10px 20px;
+	background: var(--interactive-normal);
+	color: var(--text-normal);
+	border: none;
+	border-radius: 4px;
+	cursor: pointer;
+	font-size: 0.95em;
+	transition: all 0.2s ease;
+}
+
+.ember-timeline-actions button:hover {
+	background: var(--interactive-hover);
+}
+
+.ember-timeline-actions button.mod-cta {
+	background: var(--interactive-accent);
+	color: var(--text-on-accent);
+}
+
+.ember-timeline-actions button.mod-cta:hover {
+	background: var(--interactive-accent-hover);
+}
+
+.ember-timeline-warning {
+	flex: 1 1 100%;
+	margin-top: 12px;
+	padding: 12px;
+	background: rgba(245, 158, 11, 0.1);
+	border-left: 3px solid #f59e0b;
+	border-radius: 4px;
+}
+
+.ember-timeline-warning p {
+	margin: 0;
+	font-size: 0.9em;
+	color: var(--text-muted);
+}
+
+/* ===== Loading Overlay (Global) ===== */
+.ember-loading-overlay {
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	background: rgba(0, 0, 0, 0.7);
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	z-index: 1000;
+	backdrop-filter: blur(2px);
+	animation: ember-fade-in 0.2s ease;
+}
+
+.ember-loading-spinner {
+	width: 40px;
+	height: 40px;
+	border: 4px solid var(--background-modifier-border);
+	border-top-color: var(--interactive-accent);
+	border-radius: 50%;
+	animation: ember-spin 0.8s linear infinite;
+}
+
+.ember-loading-text {
+	margin-top: 16px;
+	color: var(--text-normal);
+	font-weight: 500;
+	font-size: 0.95em;
+}
+
+@keyframes ember-spin {
+	to {
+		transform: rotate(360deg);
+	}
+}
+
+@keyframes ember-fade-in {
+	from {
+		opacity: 0;
+	}
+	to {
+		opacity: 1;
+	}
+}
+
+@keyframes ember-fade-out {
+	from {
+		opacity: 1;
+	}
+	to {
+		opacity: 0;
+	}
+}
+
+@keyframes ember-slide-in {
+	from {
+		transform: translateY(10px);
+		opacity: 0;
+	}
+	to {
+		transform: translateY(0);
+		opacity: 1;
+	}
+}
+
+@keyframes ember-scale-in {
+	from {
+		transform: scale(0.95);
+		opacity: 0;
+	}
+	to {
+		transform: scale(1);
+		opacity: 1;
+	}
+}
+
+/* ===== Smooth Transitions ===== */
+.ember-stat-card {
+	animation: ember-slide-in 0.3s ease;
+	transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.ember-stat-card:hover {
+	transform: translateY(-2px);
+	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.ember-panel-header {
+	animation: ember-fade-in 0.3s ease;
+}
+
+.ember-timeline-date h2,
+.ember-history-indicator {
+	transition: all 0.3s ease;
+}
+
+.ember-timeline-slider::-webkit-slider-thumb,
+.ember-timeline-slider::-moz-range-thumb {
+	transition: all 0.2s ease;
+}
+
+/* Enhanced button transitions */
+button {
+	transition: all 0.2s ease !important;
+}
+
+button:hover {
+	transform: translateY(-1px);
+}
+
+button:active {
+	transform: translateY(0);
+}
+
+/* ===== Tooltip Enhancements ===== */
+[title]:hover::after {
+	content: attr(title);
+	position: absolute;
+	bottom: 100%;
+	left: 50%;
+	transform: translateX(-50%) translateY(-8px);
+	padding: 6px 12px;
+	background: var(--background-secondary);
+	color: var(--text-normal);
+	border: 1px solid var(--background-modifier-border);
+	border-radius: 4px;
+	font-size: 0.85em;
+	white-space: nowrap;
+	z-index: 100;
+	pointer-events: none;
+	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+	animation: ember-fade-in 0.2s ease;
+}

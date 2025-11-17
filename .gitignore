@@ -1,0 +1,71 @@
+# ===== IDE & Editor Files =====
+# VSCode
+.vscode/
+*.code-workspace
+
+# Claude AI assistant
+.claude/
+
+# JetBrains IDEs
+*.iml
+.idea/
+
+# ===== Build Outputs =====
+# Don't include the compiled main.js file in the repo.
+# They should be uploaded to GitHub releases instead.
+main.js
+*.js.map
+dist/
+build/
+
+# ===== Node/NPM =====
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# ===== Obsidian Plugin Data (User-Generated) =====
+# Generic plugin data
+data.json
+
+# Ember-specific user data files
+heat-data.json
+heat-snapshots.json
+*.backup.json
+
+# Test vaults
+test-vault/
+sample-vault/
+
+# ===== OS Files =====
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+# Windows
+Thumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# Linux
+*~
+.directory
+
+# ===== Development & Session Files =====
+# Development folder with all tracking/session files
+_development/
+
+# Exclude all markdown files except README.md and FEATURES.md
+*.md
+!README.md
+!FEATURES.md
+
+# ===== Logs & Temporary =====
+*.log
+*.tmp
+*.temp
+*.swp
+*.swo
+*.bak
