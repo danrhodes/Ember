@@ -1,4 +1,4 @@
-# Ember - [[Obsidian]] Plugin
+# Ember - Obsidian Plugin
 
 **Visualize your vault's activity through dynamic heat tracking**
 
