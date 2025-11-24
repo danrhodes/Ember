@@ -1,4 +1,4 @@
-import { Plugin, TFile } from 'obsidian';
+import { Plugin } from 'obsidian';
 import { EmberSettings } from '../types';
 import { HeatManager } from '../managers/heat-manager';
 
@@ -17,7 +17,7 @@ export class StatusBarWidget {
 	private heatManager: HeatManager;
 	private statusBarItem: HTMLElement;
 	private currentFile: string | null = null;
-	private previousHeat: number = 0;
+	private previousHeat = 0;
 	private updateInterval: number | null = null;
 	private readonly UPDATE_INTERVAL_MS = 2000; // Update every 2 seconds
 
@@ -29,7 +29,7 @@ export class StatusBarWidget {
 		// Create status bar item
 		this.statusBarItem = plugin.addStatusBarItem();
 		this.statusBarItem.addClass('ember-status-bar');
-		this.statusBarItem.style.cursor = 'pointer';
+		this.statusBarItem.addClass('ember-clickable');
 
 		// Add click handler
 		this.statusBarItem.addEventListener('click', () => this.onStatusBarClick());
@@ -49,8 +49,6 @@ export class StatusBarWidget {
 		this.updateInterval = window.setInterval(() => {
 			this.update();
 		}, this.UPDATE_INTERVAL_MS);
-
-		console.log('Ember: Status bar widget started');
 	}
 
 	/**
@@ -64,8 +62,6 @@ export class StatusBarWidget {
 
 		// Clear status bar
 		this.statusBarItem.setText('');
-
-		console.log('Ember: Status bar widget stopped');
 	}
 
 	/**
@@ -73,11 +69,11 @@ export class StatusBarWidget {
 	 */
 	update(): void {
 		if (!this.settings.showStatusBar) {
-			this.statusBarItem.style.display = 'none';
+			this.statusBarItem.style.setProperty('display', 'none');
 			return;
 		}
 
-		this.statusBarItem.style.display = '';
+		this.statusBarItem.style.setProperty('display', '');
 
 		// Get current file
 		const activeFile = this.plugin.app.workspace.getActiveFile();
@@ -244,9 +240,7 @@ export class StatusBarWidget {
 
 		// Create a modal-like notice (Phase 3 will add proper modal)
 		const notice = document.createElement('div');
-		notice.className = 'notice ember-heat-notice';
-		notice.style.whiteSpace = 'pre-line';
-		notice.style.fontFamily = 'monospace';
+		notice.className = 'notice ember-heat-notice ember-monospace-notice';
 		notice.textContent = info;
 
 		document.body.appendChild(notice);

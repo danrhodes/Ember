@@ -21,8 +21,8 @@ export class TimelineView extends ItemView {
 	private heatManager: HeatManager;
 	private archivalManager: ArchivalManager;
 	private snapshots: Array<{ timestamp: number; date: string }> = [];
-	private currentSnapshotIndex: number = -1;
-	private isViewingHistory: boolean = false;
+	private currentSnapshotIndex = -1;
+	private isViewingHistory = false;
 
 	// UI Elements
 	private timelineSlider: HTMLInputElement;
@@ -105,7 +105,9 @@ export class TimelineView extends ItemView {
 			date: 'Current'
 		});
 
-		console.log('Ember Timeline: Loaded', this.snapshots.length, 'snapshots');
+		if (this.settings.debugLogging) {
+			console.debug('Ember Timeline: Loaded', this.snapshots.length, 'snapshots');
+		}
 	}
 
 	/**
@@ -220,10 +222,10 @@ export class TimelineView extends ItemView {
 	private createComparisonView(container: HTMLElement): void {
 		this.comparisonContainer = container.createEl('div', { cls: 'ember-comparison-container' });
 
-		const title = this.comparisonContainer.createEl('h3', { text: 'Heat Comparison' });
+		this.comparisonContainer.createEl('h3', { text: 'Heat Comparison' });
 
 		// This will be populated when a snapshot is loaded
-		const statsGrid = this.comparisonContainer.createEl('div', { cls: 'ember-stats-grid' });
+		this.comparisonContainer.createEl('div', { cls: 'ember-stats-grid' });
 	}
 
 	/**
@@ -294,7 +296,9 @@ export class TimelineView extends ItemView {
 
 		try {
 			// Load historical snapshot
-			console.log('Ember Timeline: Loading snapshot from', snapshot.date);
+			if (this.settings.debugLogging) {
+				console.debug('Ember Timeline: Loading snapshot from', snapshot.date);
+			}
 
 			const success = await this.archivalManager.loadSnapshot(snapshot.timestamp);
 
@@ -304,7 +308,9 @@ export class TimelineView extends ItemView {
 
 				// User feedback
 				new Notice(`📸 Loaded snapshot from ${this.formatDate(snapshot.timestamp)}`);
-				console.log('Ember Timeline: Loaded historical snapshot, visuals will update shortly');
+				if (this.settings.debugLogging) {
+					console.debug('Ember Timeline: Loaded historical snapshot, visuals will update shortly');
+				}
 			} else {
 				new Notice('❌ Failed to load snapshot - please try again', 5000);
 				console.error('Failed to load snapshot');
@@ -396,7 +402,9 @@ export class TimelineView extends ItemView {
 		this.showLoading('Returning to current state...');
 
 		try {
-			console.log('Ember Timeline: Returning to current state');
+			if (this.settings.debugLogging) {
+				console.debug('Ember Timeline: Returning to current state');
+			}
 
 			// Reload current data from storage
 			await this.archivalManager.restoreCurrentState();
@@ -407,7 +415,9 @@ export class TimelineView extends ItemView {
 
 			// User feedback
 			new Notice('✅ Returned to current state');
-			console.log('Ember Timeline: Returned to current state, visuals will update shortly');
+			if (this.settings.debugLogging) {
+				console.debug('Ember Timeline: Returned to current state, visuals will update shortly');
+			}
 		} finally {
 			this.hideLoading();
 		}
@@ -421,9 +431,8 @@ export class TimelineView extends ItemView {
 			return;
 		}
 
-		const snapshot = this.snapshots[this.currentSnapshotIndex];
-		console.log('Ember Timeline: Export snapshot feature - use Export/Import in settings');
 		// Note: Users can export via Settings → Ember → Export/Import
+		new Notice('Use Export/Import in settings to export heat data');
 	}
 
 	/**
@@ -475,7 +484,7 @@ export class TimelineView extends ItemView {
 		const container = this.containerEl.children[1] as HTMLElement;
 		this.loadingOverlay = container.createEl('div', { cls: 'ember-loading-overlay' });
 
-		const spinner = this.loadingOverlay.createEl('div', { cls: 'ember-loading-spinner' });
+		this.loadingOverlay.createEl('div', { cls: 'ember-loading-spinner' });
 		this.loadingOverlay.createEl('div', {
 			cls: 'ember-loading-text',
 			text: message

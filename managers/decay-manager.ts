@@ -52,8 +52,6 @@ export class DecayManager {
 
 		// Register with Obsidian to ensure cleanup
 		this.plugin.registerInterval(this.decayIntervalId);
-
-		console.log(`Ember: Decay scheduler started (interval: ${this.settings.decayInterval} minutes)`);
 	}
 
 	/**
@@ -67,8 +65,6 @@ export class DecayManager {
 
 		// Save last decay time for next session
 		this.lastDecayTime = Date.now();
-
-		console.log('Ember: Decay scheduler stopped');
 	}
 
 	/**
@@ -83,7 +79,9 @@ export class DecayManager {
 		const missedCycles = Math.floor(timeSinceLastDecay / intervalMs);
 
 		if (missedCycles > 0) {
-			console.log(`Ember: Applying ${missedCycles} missed decay cycles`);
+			if (this.settings.debugLogging) {
+				console.debug(`Ember: Applying ${missedCycles} missed decay cycles`);
+			}
 
 			// Apply decay for each missed cycle
 			for (let i = 0; i < missedCycles; i++) {
@@ -91,7 +89,7 @@ export class DecayManager {
 			}
 
 			// Save after all missed cycles
-			this.dataStore.save(true);
+			void this.dataStore.save(true);
 		}
 
 		// Update last decay time
@@ -102,7 +100,7 @@ export class DecayManager {
 	 * Perform decay on all tracked files
 	 * @param silent - If true, don't trigger a save (used for batch decay)
 	 */
-	performDecay(silent: boolean = false): void {
+	performDecay(silent = false): void {
 		const allData = this.heatManager.getAllHeatData();
 		let filesDecayed = 0;
 
@@ -135,7 +133,7 @@ export class DecayManager {
 		this.lastDecayTime = Date.now();
 
 		if (this.settings.debugLogging) {
-			console.log(`Ember: Decay applied to ${filesDecayed} files`);
+			console.debug(`Ember: Decay applied to ${filesDecayed} files`);
 		}
 
 		// Trigger save unless silent
@@ -149,7 +147,9 @@ export class DecayManager {
 	 */
 	manualDecay(): void {
 		this.performDecay();
-		console.log('Ember: Manual decay triggered');
+		if (this.settings.debugLogging) {
+			console.debug('Ember: Manual decay triggered');
+		}
 	}
 
 	/**
@@ -201,7 +201,9 @@ export class DecayManager {
 		if (intervalChanged && this.decayIntervalId !== null) {
 			this.stop();
 			this.start();
-			console.log('Ember: Decay scheduler restarted with new interval');
+			if (this.settings.debugLogging) {
+				console.debug('Ember: Decay scheduler restarted with new interval');
+			}
 		}
 	}
 

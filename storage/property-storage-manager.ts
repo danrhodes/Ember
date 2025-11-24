@@ -1,5 +1,5 @@
 import { Plugin, TFile, Notice } from 'obsidian';
-import { EmberSettings, HeatData, StorageMode } from '../types';
+import { EmberSettings, StorageMode } from '../types';
 import { HeatManager } from '../managers/heat-manager';
 
 /**
@@ -139,7 +139,7 @@ export class PropertyStorageManager {
 	 * Used during migration or bulk sync
 	 * @param showProgress - Whether to show progress notices
 	 */
-	async writeAllToProperties(showProgress: boolean = false): Promise<{
+	async writeAllToProperties(showProgress = false): Promise<{
 		success: number;
 		failed: number;
 		skipped: number;
@@ -185,7 +185,7 @@ export class PropertyStorageManager {
 	 * Used when switching away from property storage
 	 * @param showProgress - Whether to show progress notices
 	 */
-	async removeAllProperties(showProgress: boolean = false): Promise<{
+	async removeAllProperties(showProgress = false): Promise<{
 		success: number;
 		failed: number;
 	}> {

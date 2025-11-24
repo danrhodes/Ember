@@ -63,8 +63,6 @@ export class ArchivalManager {
 		if (this.settings.archival.enabled) {
 			this.scheduleSnapshots();
 		}
-
-		console.log('Ember: Archival manager started');
 	}
 
 	/**
@@ -75,8 +73,6 @@ export class ArchivalManager {
 			window.clearInterval(this.snapshotInterval);
 			this.snapshotInterval = null;
 		}
-
-		console.log('Ember: Archival manager stopped');
 	}
 
 	/**
@@ -147,7 +143,9 @@ export class ArchivalManager {
 		// Save snapshots
 		await this.saveSnapshots();
 
-		console.log(`Ember: Created heat snapshot (${snapshot.fileCount} files, avg heat: ${avgHeat.toFixed(1)})`);
+		if (this.settings.debugLogging) {
+			console.debug(`Ember: Created heat snapshot (${snapshot.fileCount} files, avg heat: ${avgHeat.toFixed(1)})`);
+		}
 	}
 
 	/**
@@ -171,8 +169,8 @@ export class ArchivalManager {
 		const afterCount = this.snapshots.length;
 		const removedCount = beforeCount - afterCount;
 
-		if (removedCount > 0) {
-			console.log(`Ember: Cleaned up ${removedCount} old snapshots`);
+		if (removedCount > 0 && this.settings.debugLogging) {
+			console.debug(`Ember: Cleaned up ${removedCount} old snapshots`);
 		}
 	}
 
@@ -186,18 +184,25 @@ export class ArchivalManager {
 			const parsed = JSON.parse(data);
 
 			// Convert plain objects back to Maps
-			this.snapshots = parsed.map((s: any) => ({
-				timestamp: s.timestamp,
-				fileCount: s.fileCount,
-				averageHeat: s.averageHeat,
-				data: new Map(Object.entries(s.data))
-			}));
+			this.snapshots = parsed.map((s: unknown) => {
+				const snapshot = s as Record<string, unknown>;
+				return {
+					timestamp: snapshot.timestamp as number,
+					fileCount: snapshot.fileCount as number,
+					averageHeat: snapshot.averageHeat as number,
+					data: new Map(Object.entries(snapshot.data as Record<string, HeatData>))
+				};
+			});
 
-			console.log(`Ember: Loaded ${this.snapshots.length} snapshots`);
+			if (this.settings.debugLogging) {
+				console.debug(`Ember: Loaded ${this.snapshots.length} snapshots`);
+			}
 		} catch (error) {
 			// File doesn't exist or is corrupted - start fresh
 			this.snapshots = [];
-			console.log('Ember: No existing snapshots found, starting fresh');
+			if (this.settings.debugLogging) {
+				console.debug('Ember: No existing snapshots found, starting fresh');
+			}
 		}
 	}
 
@@ -328,7 +333,9 @@ export class ArchivalManager {
 	async clearAllSnapshots(): Promise<void> {
 		this.snapshots = [];
 		await this.saveSnapshots();
-		console.log('Ember: Cleared all snapshots');
+		if (this.settings.debugLogging) {
+			console.debug('Ember: Cleared all snapshots');
+		}
 	}
 
 	/**
@@ -371,7 +378,9 @@ export class ArchivalManager {
 				this.heatManager.setHeatData(path, heatData);
 			}
 
-			console.log('Ember: Loaded snapshot from', new Date(snapshot.timestamp).toLocaleString());
+			if (this.settings.debugLogging) {
+				console.debug('Ember: Loaded snapshot from', new Date(snapshot.timestamp).toLocaleString());
+			}
 			return true;
 		} catch (error) {
 			console.error('Ember: Failed to load snapshot:', error);
@@ -400,7 +409,9 @@ export class ArchivalManager {
 			// Clear backup
 			this.currentStateBackup = null;
 
-			console.log('Ember: Restored current state');
+			if (this.settings.debugLogging) {
+				console.debug('Ember: Restored current state');
+			}
 		} catch (error) {
 			console.error('Ember: Failed to restore current state:', error);
 		}

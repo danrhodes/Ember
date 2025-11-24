@@ -36,8 +36,6 @@ export class VisualRenderer {
 		this.updateInterval = window.setInterval(() => {
 			this.renderAll();
 		}, this.UPDATE_INTERVAL_MS);
-
-		console.log('Ember: Visual renderer started');
 	}
 
 	/**
@@ -51,8 +49,6 @@ export class VisualRenderer {
 
 		// Remove all visual effects
 		this.clearAll();
-
-		console.log('Ember: Visual renderer stopped');
 	}
 
 	/**
@@ -143,13 +139,13 @@ export class VisualRenderer {
 		const leaves = this.app.workspace.getLeavesOfType('markdown');
 
 		for (const leaf of leaves) {
-			const view = leaf.view as any;
-			const file = view.file as TFile;
+			const view = leaf.view as unknown as Record<string, unknown>;
+			const file = view.file;
 
-			if (!file) continue;
+			if (!file || !(file instanceof TFile)) continue;
 
 			const heatData = this.heatManager.getHeatData(file.path);
-			const tabEl = (leaf as any).tabHeaderEl as HTMLElement;
+			const tabEl = (leaf as unknown as Record<string, unknown>).tabHeaderEl as HTMLElement;
 
 			if (!tabEl) continue;
 
@@ -235,14 +231,14 @@ export class VisualRenderer {
 
 		// Calculate gradient color for text
 		const color = this.getGradientColor(heatScore);
-		element.style.color = color;
 		element.style.setProperty('--ember-gradient-color', color);
+		element.style.setProperty('color', color);
 
 		// Add font weight for higher heat
 		if (heatScore >= 60) {
-			element.style.fontWeight = '500';
+			element.style.setProperty('font-weight', '500');
 		} else {
-			element.style.fontWeight = '';
+			element.style.setProperty('font-weight', '');
 		}
 	}
 
@@ -343,19 +339,19 @@ export class VisualRenderer {
 
 		// Apply color based on dominant metric
 		const color = this.getAnalyticalColor(pattern, heatScore);
-		element.style.color = color;
 		element.style.setProperty('--ember-analytical-color', color);
+		element.style.setProperty('color', color);
 
 		// Add visual indicator for pattern type
 		element.style.setProperty('--ember-pattern-indicator', this.getPatternIndicator(pattern));
 
 		// Font weight based on overall heat
 		if (heatScore >= 70) {
-			element.style.fontWeight = '600';
+			element.style.setProperty('font-weight', '600');
 		} else if (heatScore >= 40) {
-			element.style.fontWeight = '500';
+			element.style.setProperty('font-weight', '500');
 		} else {
-			element.style.fontWeight = '';
+			element.style.setProperty('font-weight', '');
 		}
 	}
 
@@ -369,7 +365,6 @@ export class VisualRenderer {
 		edits: number
 	): string {
 		// Find dominant metric
-		const metrics = { frequency, recency, duration, edits };
 		const max = Math.max(frequency, recency, duration, edits);
 
 		// Classify based on dominant metric and combinations
@@ -521,28 +516,29 @@ export class VisualRenderer {
 		// Clear file explorer
 		const fileExplorers = this.app.workspace.getLeavesOfType('file-explorer');
 		for (const leaf of fileExplorers) {
-			const view = leaf.view as any;
+			const view = leaf.view as unknown as Record<string, unknown>;
 			if (!view.fileItems) continue;
 
-			for (const fileItem of Object.values(view.fileItems)) {
-				this.removeHeatClasses(fileItem as HTMLElement);
+			const fileItems = view.fileItems as Record<string, HTMLElement>;
+			for (const fileItem of Object.values(fileItems)) {
+				this.removeHeatClasses(fileItem);
 			}
 		}
 
 		// Clear tabs
 		const leaves = this.app.workspace.getLeavesOfType('markdown');
 		for (const leaf of leaves) {
-			const tabEl = (leaf as any).tabHeaderEl as HTMLElement;
+			const tabEl = (leaf as unknown as Record<string, unknown>).tabHeaderEl as HTMLElement;
 			if (tabEl) {
 				this.removeHeatClasses(tabEl);
 			}
 		}
 
 		// Clear editor
-		const activeLeaf = this.app.workspace.activeLeaf;
+		const activeLeaf = this.app.workspace.getLeaf(false);
 		if (activeLeaf && activeLeaf.view.getViewType() === 'markdown') {
 			const view = activeLeaf.view;
-			const editorEl = (view as any).containerEl as HTMLElement;
+			const editorEl = (view as unknown as Record<string, unknown>).containerEl as HTMLElement;
 			if (editorEl) {
 				this.removeHeatClasses(editorEl);
 			}

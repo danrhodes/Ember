@@ -49,7 +49,11 @@ export class HeatManager {
 			this.heatMap.set(filePath, heatData);
 		}
 
-		return this.heatMap.get(filePath)!;
+		const data = this.heatMap.get(filePath);
+		if (!data) {
+			throw new Error(`Failed to get or create heat data for ${filePath}`);
+		}
+		return data;
 	}
 
 	/**

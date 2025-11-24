@@ -27,7 +27,9 @@ export class EmberSettingTab extends PluginSettingTab {
 		const { containerEl } = this;
 		containerEl.empty();
 
-		containerEl.createEl('h1', { text: 'Ember Settings' });
+		new Setting(containerEl)
+			.setName('Ember settings')
+			.setHeading();
 		containerEl.createEl('p', {
 			text: 'Configure heat tracking, visualization, and behavior.',
 			cls: 'setting-item-description'
@@ -68,7 +70,9 @@ export class EmberSettingTab extends PluginSettingTab {
 	 * Storage Settings Section
 	 */
 	private addStorageSettings(containerEl: HTMLElement): void {
-		containerEl.createEl('h2', { text: 'Storage Settings' });
+		new Setting(containerEl)
+			.setName('Storage settings')
+			.setHeading();
 
 		new Setting(containerEl)
 			.setName('Storage mode')
@@ -116,7 +120,9 @@ export class EmberSettingTab extends PluginSettingTab {
 	 * Property Storage Settings Section (Phase 3)
 	 */
 	private addPropertyStorageSettings(containerEl: HTMLElement): void {
-		containerEl.createEl('h2', { text: 'Property Storage & Dataview Integration' });
+		new Setting(containerEl)
+			.setName('Property storage & Dataview integration')
+			.setHeading();
 
 		containerEl.createEl('p', {
 			text: 'Store heat data in frontmatter properties for Dataview queries. Manage migration and sync between JSON and properties.',
@@ -124,7 +130,9 @@ export class EmberSettingTab extends PluginSettingTab {
 		});
 
 		// Migration Tools
-		containerEl.createEl('h3', { text: 'Migration Tools' });
+		new Setting(containerEl)
+			.setName('Migration tools')
+			.setHeading();
 
 		new Setting(containerEl)
 			.setName('Migrate to properties')
@@ -134,7 +142,7 @@ export class EmberSettingTab extends PluginSettingTab {
 				.setIcon('database')
 				.onClick(async () => {
 					const propManager = this.plugin.getPropertyStorageManager();
-					const stats = await propManager.writeAllToProperties(true);
+					await propManager.writeAllToProperties(true);
 					this.display(); // Refresh display
 				})
 			);
@@ -148,13 +156,15 @@ export class EmberSettingTab extends PluginSettingTab {
 				.setWarning()
 				.onClick(async () => {
 					const propManager = this.plugin.getPropertyStorageManager();
-					const stats = await propManager.removeAllProperties(true);
+					await propManager.removeAllProperties(true);
 					this.display(); // Refresh display
 				})
 			);
 
 		// Conflict Resolution
-		containerEl.createEl('h3', { text: 'Conflict Resolution' });
+		new Setting(containerEl)
+			.setName('Conflict resolution')
+			.setHeading();
 
 		containerEl.createEl('p', {
 			text: 'Resolve differences between JSON and property storage.',
@@ -191,7 +201,9 @@ export class EmberSettingTab extends PluginSettingTab {
 			);
 
 		// Dataview Query Examples
-		containerEl.createEl('h3', { text: 'Dataview Query Examples' });
+		new Setting(containerEl)
+			.setName('Dataview query examples')
+			.setHeading();
 
 		const examplesDiv = containerEl.createDiv({ cls: 'ember-dataview-examples' });
 		examplesDiv.createEl('p', {
@@ -219,9 +231,13 @@ export class EmberSettingTab extends PluginSettingTab {
 	 * Heat Calculation Settings Section
 	 */
 	private addHeatCalculationSettings(containerEl: HTMLElement): void {
-		containerEl.createEl('h2', { text: 'Heat Calculation' });
+		new Setting(containerEl)
+			.setName('Heat calculation')
+			.setHeading();
 
-		containerEl.createEl('h3', { text: 'Metric Weights' });
+		new Setting(containerEl)
+			.setName('Metric weights')
+			.setHeading();
 		containerEl.createEl('p', {
 			text: 'Adjust how much each metric contributes to total heat (should sum to 100)',
 			cls: 'setting-item-description'
@@ -307,7 +323,9 @@ export class EmberSettingTab extends PluginSettingTab {
 		weightSumEl.style.borderRadius = '4px';
 		weightSumEl.style.backgroundColor = 'var(--background-secondary)';
 
-		containerEl.createEl('h3', { text: 'Heat Increments' });
+		new Setting(containerEl)
+			.setName('Heat increments')
+			.setHeading();
 
 		new Setting(containerEl)
 			.setName('File open increment')
@@ -366,7 +384,9 @@ export class EmberSettingTab extends PluginSettingTab {
 	 * Decay Settings Section
 	 */
 	private addDecaySettings(containerEl: HTMLElement): void {
-		containerEl.createEl('h2', { text: 'Decay Settings' });
+		new Setting(containerEl)
+			.setName('Decay settings')
+			.setHeading();
 
 		new Setting(containerEl)
 			.setName('Decay interval')
@@ -432,7 +452,9 @@ export class EmberSettingTab extends PluginSettingTab {
 	 * Visualization Settings Section
 	 */
 	private addVisualizationSettings(containerEl: HTMLElement): void {
-		containerEl.createEl('h2', { text: 'Visualization' });
+		new Setting(containerEl)
+			.setName('Visualization')
+			.setHeading();
 
 		new Setting(containerEl)
 			.setName('Visualization mode')
@@ -461,7 +483,9 @@ export class EmberSettingTab extends PluginSettingTab {
 				})
 			);
 
-		containerEl.createEl('h3', { text: 'Standard Mode' });
+		new Setting(containerEl)
+			.setName('Standard mode')
+			.setHeading();
 
 		new Setting(containerEl)
 			.setName('Hot color')
@@ -540,7 +564,9 @@ export class EmberSettingTab extends PluginSettingTab {
 	 * Exclusion Settings Section
 	 */
 	private addExclusionSettings(containerEl: HTMLElement): void {
-		containerEl.createEl('h2', { text: 'Exclusions' });
+		new Setting(containerEl)
+			.setName('Exclusions')
+			.setHeading();
 
 		containerEl.createEl('p', {
 			text: 'Exclude files or folders from heat tracking. Right-click files to quickly exclude them.',
@@ -548,11 +574,15 @@ export class EmberSettingTab extends PluginSettingTab {
 		});
 
 		// Path Exclusions
-		containerEl.createEl('h3', { text: 'Path Exclusions' });
+		new Setting(containerEl)
+			.setName('Path exclusions')
+			.setHeading();
 		this.addExclusionList(containerEl, 'path');
 
 		// Glob Pattern Exclusions
-		containerEl.createEl('h3', { text: 'Glob Pattern Exclusions' });
+		new Setting(containerEl)
+			.setName('Glob pattern exclusions')
+			.setHeading();
 		containerEl.createEl('p', {
 			text: 'Examples: *.md, drafts/**, **/*.tmp',
 			cls: 'setting-item-description'
@@ -560,7 +590,9 @@ export class EmberSettingTab extends PluginSettingTab {
 		this.addExclusionList(containerEl, 'glob');
 
 		// Tag Exclusions
-		containerEl.createEl('h3', { text: 'Tag Exclusions' });
+		new Setting(containerEl)
+			.setName('Tag exclusions')
+			.setHeading();
 		containerEl.createEl('p', {
 			text: 'Exclude files with specific frontmatter tags',
 			cls: 'setting-item-description'
@@ -649,7 +681,9 @@ export class EmberSettingTab extends PluginSettingTab {
 	 * UI Customization Settings Section
 	 */
 	private addUISettings(containerEl: HTMLElement): void {
-		containerEl.createEl('h2', { text: 'UI Customization' });
+		new Setting(containerEl)
+			.setName('UI customization')
+			.setHeading();
 
 		new Setting(containerEl)
 			.setName('Show status bar')
@@ -728,7 +762,9 @@ export class EmberSettingTab extends PluginSettingTab {
 	 * Data Archival Settings Section (Phase 3)
 	 */
 	private addArchivalSettings(containerEl: HTMLElement): void {
-		containerEl.createEl('h2', { text: 'Data Archival & History' });
+		new Setting(containerEl)
+			.setName('Data archival & history')
+			.setHeading();
 
 		containerEl.createEl('p', {
 			text: 'Periodic snapshots enable historical heat tracking, timeline scrubbing, and trend analysis.',
@@ -787,11 +823,13 @@ export class EmberSettingTab extends PluginSettingTab {
 			);
 
 		// Add snapshot statistics display
+		new Setting(containerEl)
+			.setName('Snapshot statistics')
+			.setHeading();
 		const statsDiv = containerEl.createDiv({ cls: 'ember-archival-stats' });
-		statsDiv.createEl('h3', { text: 'Snapshot Statistics' });
 
 		// Get statistics from archival manager
-		const plugin = this.plugin as any;
+		const plugin = this.plugin as unknown as { archivalManager?: { getStatistics: () => { totalSnapshots: number; oldestSnapshot: number | null; newestSnapshot: number | null; totalSize: number; averageFileCount: number } } };
 		if (plugin.archivalManager) {
 			const stats = plugin.archivalManager.getStatistics();
 			const statsGrid = statsDiv.createDiv({ cls: 'ember-stats-grid' });
@@ -799,7 +837,7 @@ export class EmberSettingTab extends PluginSettingTab {
 			this.createStatItem(statsGrid, 'Total Snapshots', stats.totalSnapshots.toString());
 			this.createStatItem(statsGrid, 'Oldest Snapshot', this.formatDate(stats.oldestSnapshot));
 			this.createStatItem(statsGrid, 'Newest Snapshot', this.formatDate(stats.newestSnapshot));
-			this.createStatItem(statsGrid, 'Storage Size', this.formatBytes(stats.storageSize));
+			this.createStatItem(statsGrid, 'Storage Size', this.formatBytes(stats.totalSize));
 		} else {
 			statsDiv.createEl('p', {
 				text: 'Archival manager not initialized. Enable the archival system to see statistics.',
@@ -820,7 +858,7 @@ export class EmberSettingTab extends PluginSettingTab {
 	/**
 	 * Helper: Format date for display
 	 */
-	private formatDate(timestamp: number): string {
+	private formatDate(timestamp: number | null): string {
 		if (!timestamp || timestamp === 0) return 'Never';
 		const date = new Date(timestamp);
 		return date.toLocaleString();
@@ -841,7 +879,9 @@ export class EmberSettingTab extends PluginSettingTab {
 	 * Export/Import Settings Section (Phase 3)
 	 */
 	private addExportImportSettings(containerEl: HTMLElement): void {
-		containerEl.createEl('h2', { text: 'Export & Import' });
+		new Setting(containerEl)
+			.setName('Export & import')
+			.setHeading();
 
 		containerEl.createEl('p', {
 			text: 'Export your heat data for backup or transfer to another vault. Import data from previous exports.',
@@ -875,7 +915,9 @@ export class EmberSettingTab extends PluginSettingTab {
 			);
 
 		// Import Section
-		containerEl.createEl('h3', { text: 'Import Heat Data' });
+		new Setting(containerEl)
+			.setName('Import heat data')
+			.setHeading();
 
 		// Import Strategy Selector
 		let importStrategy: 'replace' | 'merge' | 'skip' = 'merge';
@@ -950,7 +992,9 @@ export class EmberSettingTab extends PluginSettingTab {
 	 * Advanced Settings Section
 	 */
 	private addAdvancedSettings(containerEl: HTMLElement): void {
-		containerEl.createEl('h2', { text: 'Advanced' });
+		new Setting(containerEl)
+			.setName('Advanced')
+			.setHeading();
 
 		new Setting(containerEl)
 			.setName('Debug logging')
@@ -995,7 +1039,6 @@ export class EmberSettingTab extends PluginSettingTab {
 	 */
 	private getWeightSumText(): string {
 		const sum = Object.values(this.plugin.settings.metricWeights).reduce((a, b) => a + b, 0);
-		const color = sum === 100 ? 'green' : sum < 100 ? 'orange' : 'red';
 		return `Total weight: ${sum}% ${sum === 100 ? '✓' : '(should be 100)'}`;
 	}
 
@@ -1027,7 +1070,9 @@ class ExclusionModal extends Modal {
 		const { contentEl } = this;
 		contentEl.empty();
 
-		contentEl.createEl('h2', { text: `Add ${this.type} exclusion` });
+		new Setting(contentEl)
+			.setName(`Add ${this.type} exclusion`)
+			.setHeading();
 
 		let inputEl: HTMLInputElement;
 

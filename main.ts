@@ -1,5 +1,5 @@
 import { Plugin, TFile, Menu, Notice } from 'obsidian';
-import { EmberSettings, DEFAULT_SETTINGS } from './types';
+import { EmberSettings, DEFAULT_SETTINGS, VisualizationMode } from './types';
 import { HeatManager } from './managers/heat-manager';
 import { MetricsManager } from './managers/metrics-manager';
 import { DecayManager } from './managers/decay-manager';
@@ -48,19 +48,15 @@ export default class EmberPlugin extends Plugin {
 
 	// UI Components
 	private statusBarWidget: StatusBarWidget;
-	private popularFilesView: PopularFilesView | null = null;
-	private hotFilesView: HotFilesView | null = null;
-	private statisticsView: StatisticsView | null = null;
-	private timelineView: TimelineView | null = null;
 
 	async onload() {
-		console.log('Loading Ember plugin...');
-
 		// Load settings
 		await this.loadSettings();
 
 		// Initialize managers in correct order
-		console.log('Initializing Ember managers...');
+		if (this.settings.debugLogging) {
+			console.debug('Ember: Initializing managers...');
+		}
 
 		// 1. HeatManager - Core heat tracking
 		this.heatManager = new HeatManager(this.settings);
@@ -74,24 +70,32 @@ export default class EmberPlugin extends Plugin {
 		// 4. DataStore - Load persisted data
 		this.dataStore = new DataStore(this, this.settings, this.heatManager);
 		const dataLoaded = await this.dataStore.load();
-		if (dataLoaded) {
-			console.log('Ember: Heat data loaded successfully');
-		} else {
-			console.log('Ember: Starting with fresh heat data');
+		if (this.settings.debugLogging) {
+			if (dataLoaded) {
+				console.debug('Ember: Heat data loaded successfully');
+			} else {
+				console.debug('Ember: Starting with fresh heat data');
+			}
 		}
 
 		// 5. ArchivalManager - Start snapshot system (Phase 3)
 		this.archivalManager = new ArchivalManager(this, this.settings, this.heatManager);
 		await this.archivalManager.start();
-		console.log('Ember: Archival system initialized');
+		if (this.settings.debugLogging) {
+			console.debug('Ember: Archival system initialized');
+		}
 
 		// 6. ExportImportManager - Export/Import functionality (Phase 3)
 		this.exportImportManager = new ExportImportManager(this, this.settings, this.heatManager);
-		console.log('Ember: Export/Import manager initialized');
+		if (this.settings.debugLogging) {
+			console.debug('Ember: Export/Import manager initialized');
+		}
 
 		// 7. PropertyStorageManager - Property storage for Dataview integration (Phase 3)
 		this.propertyStorageManager = new PropertyStorageManager(this, this.settings, this.heatManager);
-		console.log('Ember: Property storage manager initialized');
+		if (this.settings.debugLogging) {
+			console.debug('Ember: Property storage manager initialized');
+		}
 
 		// 8. DecayManager - Start decay scheduler
 		this.decayManager = new DecayManager(this, this.settings, this.heatManager, this.dataStore);
@@ -118,37 +122,25 @@ export default class EmberPlugin extends Plugin {
 		// 12. Register Popular Files View
 		this.registerView(
 			POPULAR_FILES_VIEW_TYPE,
-			(leaf) => {
-				this.popularFilesView = new PopularFilesView(leaf, this.settings, this.heatManager);
-				return this.popularFilesView;
-			}
+			(leaf) => new PopularFilesView(leaf, this.settings, this.heatManager)
 		);
 
 		// 13. Register Hot Files View
 		this.registerView(
 			HOT_FILES_VIEW_TYPE,
-			(leaf) => {
-				this.hotFilesView = new HotFilesView(leaf, this.settings, this.heatManager);
-				return this.hotFilesView;
-			}
+			(leaf) => new HotFilesView(leaf, this.settings, this.heatManager)
 		);
 
 		// 14. Register Statistics View
 		this.registerView(
 			STATISTICS_VIEW_TYPE,
-			(leaf) => {
-				this.statisticsView = new StatisticsView(leaf, this.settings, this.heatManager);
-				return this.statisticsView;
-			}
+			(leaf) => new StatisticsView(leaf, this.settings, this.heatManager)
 		);
 
 		// 15. Register Timeline View
 		this.registerView(
 			TIMELINE_VIEW_TYPE,
-			(leaf) => {
-				this.timelineView = new TimelineView(leaf, this.settings, this.heatManager, this.archivalManager);
-				return this.timelineView;
-			}
+			(leaf) => new TimelineView(leaf, this.settings, this.heatManager, this.archivalManager)
 		);
 
 		// 17. Add settings tab
@@ -255,12 +247,9 @@ export default class EmberPlugin extends Plugin {
 				}
 			})
 		);
-
-		console.log('Ember plugin loaded successfully');
 	}
 
 	onunload() {
-		console.log('Unloading Ember plugin...');
 
 		// Cleanup in reverse order of initialization
 
@@ -284,16 +273,12 @@ export default class EmberPlugin extends Plugin {
 		// 5. Stop archival system and save final snapshot
 		if (this.archivalManager) {
 			this.archivalManager.stop();
-			console.log('Ember: Archival system stopped');
 		}
 
 		// 6. Save final data
 		if (this.dataStore) {
 			this.dataStore.save(true); // Immediate save
-			console.log('Ember: Final heat data saved');
 		}
-
-		console.log('Ember plugin unloaded successfully');
 	}
 
 	async loadSettings() {
@@ -314,10 +299,20 @@ export default class EmberPlugin extends Plugin {
 		if (this.propertyStorageManager) this.propertyStorageManager.updateSettings(this.settings);
 		if (this.visualRenderer) this.visualRenderer.updateSettings(this.settings);
 		if (this.statusBarWidget) this.statusBarWidget.updateSettings(this.settings);
-		if (this.popularFilesView) this.popularFilesView.updateSettings(this.settings);
-		if (this.hotFilesView) this.hotFilesView.updateSettings(this.settings);
-		if (this.statisticsView) this.statisticsView.updateSettings(this.settings);
-		if (this.timelineView) this.timelineView.updateSettings(this.settings);
+
+		// Update all view instances
+		this.app.workspace.getLeavesOfType(POPULAR_FILES_VIEW_TYPE).forEach(leaf => {
+			(leaf.view as PopularFilesView).updateSettings(this.settings);
+		});
+		this.app.workspace.getLeavesOfType(HOT_FILES_VIEW_TYPE).forEach(leaf => {
+			(leaf.view as HotFilesView).updateSettings(this.settings);
+		});
+		this.app.workspace.getLeavesOfType(STATISTICS_VIEW_TYPE).forEach(leaf => {
+			(leaf.view as StatisticsView).updateSettings(this.settings);
+		});
+		this.app.workspace.getLeavesOfType(TIMELINE_VIEW_TYPE).forEach(leaf => {
+			(leaf.view as TimelineView).updateSettings(this.settings);
+		});
 	}
 
 	/**
@@ -518,21 +513,25 @@ Last accessed: ${new Date(heatData.metrics.lastAccessed).toLocaleDateString()}`;
 	 * Cycle through visualization modes
 	 */
 	async cycleVisualizationMode(): Promise<void> {
-		const modes = ['standard', 'emergence', 'analytical'];
+		const modes: VisualizationMode[] = [
+			VisualizationMode.STANDARD,
+			VisualizationMode.EMERGENCE,
+			VisualizationMode.ANALYTICAL
+		];
 		const currentIndex = modes.indexOf(this.settings.visualizationMode);
 		const nextIndex = (currentIndex + 1) % modes.length;
 		const nextMode = modes[nextIndex];
 
-		this.settings.visualizationMode = nextMode as any;
+		this.settings.visualizationMode = nextMode;
 		await this.saveSettings();
 
-		const modeNames = {
-			standard: 'Standard',
-			emergence: 'Emergence',
-			analytical: 'Analytical'
+		const modeNames: Record<VisualizationMode, string> = {
+			[VisualizationMode.STANDARD]: 'Standard',
+			[VisualizationMode.EMERGENCE]: 'Emergence',
+			[VisualizationMode.ANALYTICAL]: 'Analytical'
 		};
 
-		new Notice(`🎨 Visualization mode: ${modeNames[nextMode as keyof typeof modeNames]}`);
+		new Notice(`🎨 Visualization mode: ${modeNames[nextMode]}`);
 	}
 
 	/**

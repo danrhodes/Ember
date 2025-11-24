@@ -1,5 +1,5 @@
 import { ItemView, WorkspaceLeaf } from 'obsidian';
-import { EmberSettings } from '../types';
+import { EmberSettings, HeatData } from '../types';
 import { HeatManager } from '../managers/heat-manager';
 
 export const STATISTICS_VIEW_TYPE = 'ember-statistics-view';
@@ -119,7 +119,7 @@ export class StatisticsView extends ItemView {
 	/**
 	 * Render overview statistics
 	 */
-	private renderOverview(container: HTMLElement, allHeatData: any[]): void {
+	private renderOverview(container: HTMLElement, allHeatData: HeatData[]): void {
 		const section = container.createEl('div', { cls: 'ember-stats-section' });
 		section.createEl('h3', { text: 'Overview' });
 
@@ -148,7 +148,7 @@ export class StatisticsView extends ItemView {
 	/**
 	 * Render heat distribution chart
 	 */
-	private renderHeatDistribution(container: HTMLElement, allHeatData: any[]): void {
+	private renderHeatDistribution(container: HTMLElement, allHeatData: HeatData[]): void {
 		const section = container.createEl('div', { cls: 'ember-stats-section' });
 		section.createEl('h3', { text: 'Heat Distribution' });
 
@@ -175,7 +175,7 @@ export class StatisticsView extends ItemView {
 	/**
 	 * Render activity trends with line chart
 	 */
-	private renderActivityTrends(container: HTMLElement, allHeatData: any[]): void {
+	private renderActivityTrends(container: HTMLElement, allHeatData: HeatData[]): void {
 		const section = container.createEl('div', { cls: 'ember-stats-section' });
 		section.createEl('h3', { text: 'Activity Trends (Last 7 Days)' });
 
@@ -235,7 +235,7 @@ export class StatisticsView extends ItemView {
 	/**
 	 * Render top folders by activity
 	 */
-	private renderTopFolders(container: HTMLElement, allHeatData: any[]): void {
+	private renderTopFolders(container: HTMLElement, allHeatData: HeatData[]): void {
 		const section = container.createEl('div', { cls: 'ember-stats-section' });
 		section.createEl('h3', { text: 'Top Folders by Activity' });
 
@@ -243,16 +243,16 @@ export class StatisticsView extends ItemView {
 		const folderStats = new Map<string, { count: number; totalHeat: number }>();
 
 		allHeatData.forEach(data => {
-			const pathParts = data.filePath.split('/');
+			const pathParts = data.path.split('/');
 			const folder = pathParts.length > 1 ? pathParts[0] : '(root)';
 
-			if (!folderStats.has(folder)) {
-				folderStats.set(folder, { count: 0, totalHeat: 0 });
+			const existingStats = folderStats.get(folder);
+			if (existingStats) {
+				existingStats.count++;
+				existingStats.totalHeat += data.heatScore;
+			} else {
+				folderStats.set(folder, { count: 1, totalHeat: data.heatScore });
 			}
-
-			const stats = folderStats.get(folder)!;
-			stats.count++;
-			stats.totalHeat += data.heatScore;
 		});
 
 		// Sort by average heat
@@ -300,7 +300,7 @@ export class StatisticsView extends ItemView {
 	/**
 	 * Render session statistics
 	 */
-	private renderSessionStats(container: HTMLElement, allHeatData: any[]): void {
+	private renderSessionStats(container: HTMLElement, allHeatData: HeatData[]): void {
 		const section = container.createEl('div', { cls: 'ember-stats-section' });
 		section.createEl('h3', { text: 'Recent Activity' });
 
@@ -309,9 +309,9 @@ export class StatisticsView extends ItemView {
 		const oneWeek = 7 * oneDay;
 		const oneMonth = 30 * oneDay;
 
-		const today = allHeatData.filter(d => d.metrics.lastAccessTime > now - oneDay).length;
-		const thisWeek = allHeatData.filter(d => d.metrics.lastAccessTime > now - oneWeek).length;
-		const thisMonth = allHeatData.filter(d => d.metrics.lastAccessTime > now - oneMonth).length;
+		const today = allHeatData.filter(d => d.metrics.lastAccessed > now - oneDay).length;
+		const thisWeek = allHeatData.filter(d => d.metrics.lastAccessed > now - oneWeek).length;
+		const thisMonth = allHeatData.filter(d => d.metrics.lastAccessed > now - oneMonth).length;
 
 		const statsGrid = section.createEl('div', { cls: 'ember-stats-grid' });
 
@@ -417,7 +417,7 @@ export class StatisticsView extends ItemView {
 	/**
 	 * Render activity calendar (GitHub-style contribution graph)
 	 */
-	private renderActivityCalendar(container: HTMLElement, allHeatData: any[]): void {
+	private renderActivityCalendar(container: HTMLElement, allHeatData: HeatData[]): void {
 		const section = container.createEl('div', { cls: 'ember-stats-section' });
 		section.createEl('h3', { text: 'Activity Calendar (Last 30 Days)' });
 
@@ -451,7 +451,7 @@ export class StatisticsView extends ItemView {
 			// Calculate intensity level (0-4)
 			const intensity = activity === 0 ? 0 : Math.min(4, Math.ceil((activity / maxActivity) * 4));
 
-			const cell = calendarGrid.createEl('div', {
+			calendarGrid.createEl('div', {
 				cls: `ember-calendar-cell ember-calendar-intensity-${intensity}`,
 				attr: {
 					'data-date': date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
@@ -473,7 +473,7 @@ export class StatisticsView extends ItemView {
 	/**
 	 * Render peak activity times
 	 */
-	private renderPeakActivityTimes(container: HTMLElement, allHeatData: any[]): void {
+	private renderPeakActivityTimes(container: HTMLElement, allHeatData: HeatData[]): void {
 		const section = container.createEl('div', { cls: 'ember-stats-section' });
 		section.createEl('h3', { text: 'Peak Activity Times' });
 

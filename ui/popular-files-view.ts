@@ -29,9 +29,9 @@ export class PopularFilesView extends ItemView {
 	private heatManager: HeatManager;
 	private refreshInterval: number | null = null;
 	private readonly REFRESH_INTERVAL_MS = 5000; // Refresh every 5 seconds
-	private searchQuery: string = '';
+	private searchQuery = '';
 	private selectedFiles: Set<string> = new Set(); // Track selected file paths
-	private batchMode: boolean = false; // Toggle batch operations mode
+	private batchMode = false; // Toggle batch operations mode
 	private filterState: FilterState = {
 		folderPath: '',
 		heatMin: 0,
@@ -41,7 +41,7 @@ export class PopularFilesView extends ItemView {
 		customDateEnd: null,
 		onlyFavorites: false
 	};
-	private showFilters: boolean = false;
+	private showFilters = false;
 
 	constructor(leaf: WorkspaceLeaf, settings: EmberSettings, heatManager: HeatManager) {
 		super(leaf);
@@ -188,7 +188,7 @@ export class PopularFilesView extends ItemView {
 			}
 
 			// Rank badge
-			const rankBadge = itemEl.createEl('span', {
+			itemEl.createEl('span', {
 				cls: 'ember-rank-badge',
 				text: `${rank}`
 			});
@@ -217,7 +217,7 @@ export class PopularFilesView extends ItemView {
 
 			// Heat score
 			const heatLevel = this.heatManager.getHeatLevel(heatData.heatScore);
-			const heatBadge = statsEl.createEl('span', {
+			statsEl.createEl('span', {
 				cls: `ember-heat-badge ${this.getHeatBadgeClass(heatLevel)}`,
 				text: `${Math.round(heatData.heatScore)}`
 			});
@@ -250,7 +250,7 @@ export class PopularFilesView extends ItemView {
 	/**
 	 * Filter files by search query (fuzzy search)
 	 */
-	private filterFiles(files: any[], query: string): any[] {
+	private filterFiles<T extends { path: string; heatScore: number }>(files: T[], query: string): T[] {
 		const lowerQuery = query.toLowerCase();
 		return files.filter(file => {
 			const fileName = this.getFileName(file.path).toLowerCase();
@@ -327,7 +327,7 @@ export class PopularFilesView extends ItemView {
 		// Active filter count badge
 		const activeFilterCount = this.getActiveFilterCount();
 		if (activeFilterCount > 0) {
-			const badge = filterContainer.createEl('span', {
+			filterContainer.createEl('span', {
 				cls: 'ember-filter-badge',
 				text: `${activeFilterCount}`
 			});
@@ -458,7 +458,7 @@ export class PopularFilesView extends ItemView {
 	/**
 	 * Apply filters to file list
 	 */
-	private applyFilters(files: any[]): any[] {
+	private applyFilters<T extends { path: string; heatScore: number; metrics: { lastAccessed: number; isFavorite: boolean } }>(files: T[]): T[] {
 		return files.filter(file => {
 			// Folder filter
 			if (this.filterState.folderPath.trim()) {
@@ -546,7 +546,7 @@ export class PopularFilesView extends ItemView {
 		// Show action buttons only in batch mode
 		if (this.batchMode) {
 			// Selection counter
-			const counter = controlsContainer.createEl('span', {
+			controlsContainer.createEl('span', {
 				cls: 'ember-selection-counter',
 				text: `${this.selectedFiles.size} selected`
 			});

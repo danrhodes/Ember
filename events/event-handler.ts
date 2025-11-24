@@ -93,7 +93,6 @@ export class EventHandler {
 			})
 		);
 
-		console.log('Ember: Event listeners registered');
 	}
 
 	/**
@@ -153,8 +152,8 @@ export class EventHandler {
 		if (leaf) {
 			const view = leaf.view;
 			if (view.getViewType() === 'markdown') {
-				const file = (view as any).file as TFile;
-				if (file) {
+				const file = (view as unknown as Record<string, unknown>).file;
+				if (file instanceof TFile) {
 					this.currentFile = file.path;
 				}
 			}
@@ -168,11 +167,11 @@ export class EventHandler {
 	 * @param file - The deleted file
 	 */
 	private onFileDelete(file: TFile): void {
-		const filePath = file.path;
-
 		// Remove from heat data (will be handled by VaultWatcher in Phase 3)
 		// For now, we can keep the data for potential recovery
-		console.log(`Ember: File deleted: ${filePath}`);
+		if (this.settings.debugLogging) {
+			console.debug(`Ember: File deleted: ${file.path}`);
+		}
 	}
 
 	/**
@@ -182,7 +181,9 @@ export class EventHandler {
 	 */
 	private onFileRename(file: TFile, oldPath: string): void {
 		// Update path in heat data (will be handled by VaultWatcher in Phase 3)
-		console.log(`Ember: File renamed: ${oldPath} -> ${file.path}`);
+		if (this.settings.debugLogging) {
+			console.debug(`Ember: File renamed: ${oldPath} -> ${file.path}`);
+		}
 	}
 
 	/**
@@ -222,7 +223,7 @@ export class EventHandler {
 		this.metricsManager.onFileAccess(filePath);
 
 		if (this.settings.debugLogging) {
-			console.log(`Ember: File accessed: ${filePath}`);
+			console.debug(`Ember: File accessed: ${filePath}`);
 		}
 	}
 
@@ -235,7 +236,7 @@ export class EventHandler {
 		this.metricsManager.onFileEdit(filePath);
 
 		if (this.settings.debugLogging) {
-			console.log(`Ember: File edited: ${filePath}`);
+			console.debug(`Ember: File edited: ${filePath}`);
 		}
 	}
 
@@ -282,8 +283,6 @@ export class EventHandler {
 
 		// Force save
 		this.dataStore.forceSave();
-
-		console.log('Ember: Event handler cleaned up');
 	}
 
 	/**

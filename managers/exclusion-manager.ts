@@ -92,7 +92,6 @@ export class ExclusionManager {
 	 *
 	 * Examples:
 	 * - "*.md" matches all markdown files in root
-	 * - "**​/*.md" matches all markdown files anywhere
 	 * - "drafts/**" matches everything in drafts folder
 	 *
 	 * @param filePath - Normalized file path

@@ -104,7 +104,7 @@ export class ExportImportManager {
 	async importFromJSON(
 		jsonString: string,
 		strategy: 'replace' | 'merge' | 'skip' = 'merge',
-		createBackup: boolean = true
+		createBackup = true
 	): Promise<{
 		success: boolean;
 		message: string;
@@ -153,32 +153,35 @@ export class ExportImportManager {
 	 * @param data - Data to validate
 	 * @returns Validation result
 	 */
-	private validateImportData(data: any): { valid: boolean; error?: string } {
+	private validateImportData(data: unknown): { valid: boolean; error?: string } {
 		// Check if data exists
-		if (!data) {
+		if (!data || typeof data !== 'object') {
 			return { valid: false, error: 'No data provided' };
 		}
 
+		const record = data as Record<string, unknown>;
 		// Check for metadata
-		if (!data.metadata || !data.data) {
+		if (!record.metadata || !record.data) {
 			return { valid: false, error: 'Missing metadata or data section' };
 		}
 
+		const metadata = record.metadata as Record<string, unknown>;
 		// Check metadata structure
-		if (!data.metadata.exportDate || !data.metadata.version) {
+		if (!metadata.exportDate || !metadata.version) {
 			return { valid: false, error: 'Invalid metadata structure' };
 		}
 
+		const dataSection = record.data as Record<string, unknown>;
 		// Check data structure
-		if (!data.data.files || typeof data.data.files !== 'object') {
+		if (!dataSection.files || typeof dataSection.files !== 'object') {
 			return { valid: false, error: 'Invalid data structure' };
 		}
 
 		// Validate at least one file entry
-		const fileEntries = Object.values(data.data.files);
+		const fileEntries = Object.values(dataSection.files as Record<string, unknown>);
 		if (fileEntries.length > 0) {
-			const firstEntry = fileEntries[0] as any;
-			if (!firstEntry.heatScore && firstEntry.heatScore !== 0) {
+			const firstEntry = fileEntries[0] as Record<string, unknown>;
+			if (firstEntry.heatScore === undefined && firstEntry.heatScore !== 0) {
 				return { valid: false, error: 'Invalid file entry structure' };
 			}
 		}
@@ -193,7 +196,7 @@ export class ExportImportManager {
 	 * @returns Statistics about the import
 	 */
 	private async applyImportStrategy(
-		dataStore: any,
+		dataStore: { files: Record<string, HeatData> },
 		strategy: 'replace' | 'merge' | 'skip'
 	): Promise<{ imported: number; skipped: number; updated: number }> {
 		const stats = { imported: 0, skipped: 0, updated: 0 };
@@ -212,7 +215,8 @@ export class ExportImportManager {
 			for (const [path, heatData] of Object.entries(dataStore.files)) {
 				if (currentData.has(path)) {
 					// File exists - merge by taking higher heat score
-					const existing = currentData.get(path)!;
+					const existing = currentData.get(path);
+					if (!existing) continue;
 					const imported = heatData as HeatData;
 
 					if (imported.heatScore > existing.heatScore) {
@@ -269,7 +273,7 @@ export class ExportImportManager {
 	 * @param filename - Filename for download
 	 * @param mimeType - MIME type of file
 	 */
-	downloadFile(content: string, filename: string, mimeType: string = 'application/json'): void {
+	downloadFile(content: string, filename: string, mimeType = 'application/json'): void {
 		const blob = new Blob([content], { type: mimeType });
 		const url = URL.createObjectURL(blob);
 		const link = document.createElement('a');

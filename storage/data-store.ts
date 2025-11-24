@@ -17,7 +17,7 @@ export class DataStore {
 	private settings: EmberSettings;
 	private heatManager: HeatManager;
 	private dataFilePath: string;
-	private isDirty: boolean = false;
+	private isDirty = false;
 	private saveTimeout: number | null = null;
 	private readonly SAVE_DEBOUNCE_MS = 5000; // 5 seconds
 	private readonly DATA_VERSION = '1.0.0';
@@ -38,7 +38,9 @@ export class DataStore {
 			const data = await this.plugin.loadData();
 
 			if (!data || !data.heatData) {
-				console.log('Ember: No existing heat data found, starting fresh');
+				if (this.settings.debugLogging) {
+					console.debug('Ember: No existing heat data found, starting fresh');
+				}
 				return false;
 			}
 
@@ -61,7 +63,9 @@ export class DataStore {
 			// Load into heat manager
 			this.heatManager.loadData(heatMap);
 
-			console.log(`Ember: Loaded ${heatMap.size} files from storage`);
+			if (this.settings.debugLogging) {
+				console.debug(`Ember: Loaded ${heatMap.size} files from storage`);
+			}
 			return true;
 
 		} catch (error) {
@@ -76,7 +80,7 @@ export class DataStore {
 	 * Uses debouncing to avoid excessive writes
 	 * @param immediate - If true, save immediately without debouncing
 	 */
-	async save(immediate: boolean = false): Promise<void> {
+	async save(immediate = false): Promise<void> {
 		this.isDirty = true;
 
 		if (immediate) {
@@ -122,7 +126,9 @@ export class DataStore {
 			await this.plugin.saveData({ heatData: store });
 
 			this.isDirty = false;
-			console.log(`Ember: Saved ${heatMap.size} files to storage`);
+			if (this.settings.debugLogging) {
+				console.debug(`Ember: Saved ${heatMap.size} files to storage`);
+			}
 
 		} catch (error) {
 			console.error('Ember: Error saving heat data:', error);
@@ -209,7 +215,7 @@ export class DataStore {
 	 * Create backup of corrupted data for debugging
 	 * @param corruptedData - The corrupted data to backup
 	 */
-	private async createCorruptedDataBackup(corruptedData: any): Promise<void> {
+	private async createCorruptedDataBackup(corruptedData: unknown): Promise<void> {
 		try {
 			const adapter = this.plugin.app.vault.adapter;
 			const pluginDir = `${this.plugin.manifest.dir}`;
@@ -221,7 +227,9 @@ export class DataStore {
 				JSON.stringify(corruptedData, null, 2)
 			);
 
-			console.log(`Ember: Corrupted data backed up to ${backupPath}`);
+			if (this.settings.debugLogging) {
+				console.debug(`Ember: Corrupted data backed up to ${backupPath}`);
+			}
 		} catch (error) {
 			console.error('Ember: Error backing up corrupted data:', error);
 		}
@@ -232,27 +240,31 @@ export class DataStore {
 	 * @param data - Data to validate
 	 * @returns True if valid, false otherwise
 	 */
-	private validateData(data: any): boolean {
-		if (!data) return false;
+	private validateData(data: unknown): boolean {
+		if (!data || typeof data !== 'object') return false;
 
+		const record = data as Record<string, unknown>;
 		// Check required fields
-		if (!data.version || !data.files) return false;
+		if (!record.version || !record.files) return false;
 
 		// Check that files is an object
-		if (typeof data.files !== 'object') return false;
+		if (typeof record.files !== 'object') return false;
 
 		// Sample validation of a few entries
-		const entries = Object.entries(data.files);
+		const entries = Object.entries(record.files as Record<string, unknown>);
 		const sampleSize = Math.min(5, entries.length);
 
 		for (let i = 0; i < sampleSize; i++) {
-			const [path, heatData] = entries[i] as [string, any];
+			const [, heatData] = entries[i] as [string, unknown];
+
+			if (typeof heatData !== 'object' || !heatData) return false;
+			const heatRecord = heatData as Record<string, unknown>;
 
 			// Validate required fields
-			if (!heatData.path || !heatData.metrics) return false;
+			if (!heatRecord.path || !heatRecord.metrics) return false;
 
 			// Validate metrics structure
-			const metrics = heatData.metrics;
+			const metrics = heatRecord.metrics as Record<string, unknown>;
 			if (
 				typeof metrics.accessCount !== 'number' ||
 				typeof metrics.lastAccessed !== 'number' ||
