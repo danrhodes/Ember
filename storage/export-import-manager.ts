@@ -207,7 +207,7 @@ export class ExportImportManager {
 			this.heatManager.clear();
 
 			for (const [path, heatData] of Object.entries(dataStore.files)) {
-				this.heatManager.importHeatData(path, heatData as HeatData);
+				this.heatManager.importHeatData(path, heatData);
 				stats.imported++;
 			}
 		} else if (strategy === 'merge') {
@@ -217,17 +217,16 @@ export class ExportImportManager {
 					// File exists - merge by taking higher heat score
 					const existing = currentData.get(path);
 					if (!existing) continue;
-					const imported = heatData as HeatData;
 
-					if (imported.heatScore > existing.heatScore) {
-						this.heatManager.importHeatData(path, imported);
+					if (heatData.heatScore > existing.heatScore) {
+						this.heatManager.importHeatData(path, heatData);
 						stats.updated++;
 					} else {
 						stats.skipped++;
 					}
 				} else {
 					// New file - import
-					this.heatManager.importHeatData(path, heatData as HeatData);
+					this.heatManager.importHeatData(path, heatData);
 					stats.imported++;
 				}
 			}
@@ -237,7 +236,7 @@ export class ExportImportManager {
 				if (currentData.has(path)) {
 					stats.skipped++;
 				} else {
-					this.heatManager.importHeatData(path, heatData as HeatData);
+					this.heatManager.importHeatData(path, heatData);
 					stats.imported++;
 				}
 			}

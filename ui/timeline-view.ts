@@ -115,17 +115,18 @@ export class TimelineView extends ItemView {
 	 */
 	private showEmptyState(container: HTMLElement): void {
 		const emptyState = container.createEl('div', { cls: 'ember-empty-state' });
-		emptyState.createEl('h3', { text: 'No Historical Data' });
+		emptyState.createEl('h3', { text: 'No historical data' });
 		emptyState.createEl('p', { text: 'Snapshots will appear here once the archival system creates them.' });
 		emptyState.createEl('p', {
 			text: `Snapshots are created ${this.settings.archival.snapshotFrequency === 'daily' ? 'daily at midnight' :
 				this.settings.archival.snapshotFrequency === 'weekly' ? 'weekly' : 'hourly'}.`
 		});
 
-		const manualButton = emptyState.createEl('button', { text: 'Create Snapshot Now' });
-		manualButton.addEventListener('click', async () => {
-			await this.archivalManager.createSnapshot();
-			await this.onOpen(); // Refresh view
+		const manualButton = emptyState.createEl('button', { text: 'Create snapshot now' });
+		manualButton.addEventListener('click', () => {
+			void this.archivalManager.createSnapshot().then(() => {
+				void this.onOpen(); // Refresh view
+			});
 		});
 	}
 
@@ -134,10 +135,10 @@ export class TimelineView extends ItemView {
 	 */
 	private createHeader(container: HTMLElement): void {
 		const header = container.createEl('div', { cls: 'ember-panel-header' });
-		header.createEl('h4', { text: 'Heat Timeline' });
+		header.createEl('h4', { text: 'Heat timeline' });
 
 		this.historyIndicator = header.createEl('div', { cls: 'ember-history-indicator' });
-		this.historyIndicator.style.display = 'none';
+		this.historyIndicator.setCssStyles({ display: 'none' });
 		this.historyIndicator.createEl('span', { text: '📍 Viewing History' });
 
 		const subtitle = header.createEl('div', { cls: 'ember-panel-subtitle' });
@@ -162,7 +163,7 @@ export class TimelineView extends ItemView {
 		this.timelineSlider = sliderContainer.createEl('input', {
 			type: 'range',
 			cls: 'ember-timeline-slider'
-		}) as HTMLInputElement;
+		});
 
 		this.timelineSlider.min = '0';
 		this.timelineSlider.max = String(this.snapshots.length - 1);
@@ -193,8 +194,8 @@ export class TimelineView extends ItemView {
 			this.updateDisplay();
 		});
 
-		this.timelineSlider.addEventListener('change', async () => {
-			await this.loadSnapshot(this.currentSnapshotIndex);
+		this.timelineSlider.addEventListener('change', () => {
+			void this.loadSnapshot(this.currentSnapshotIndex);
 		});
 
 		// Navigation buttons
@@ -210,7 +211,7 @@ export class TimelineView extends ItemView {
 		nextBtn.setAttribute('aria-label', 'Next snapshot');
 		nextBtn.addEventListener('click', () => this.navigateNext());
 
-		const currentBtn = navButtons.createEl('button', { text: 'Jump to Current' });
+		const currentBtn = navButtons.createEl('button', { text: 'Jump to current' });
 		currentBtn.title = 'Return to live heat data';
 		currentBtn.setAttribute('aria-label', 'Jump to current state');
 		currentBtn.addEventListener('click', () => this.jumpToCurrent());
@@ -222,7 +223,7 @@ export class TimelineView extends ItemView {
 	private createComparisonView(container: HTMLElement): void {
 		this.comparisonContainer = container.createEl('div', { cls: 'ember-comparison-container' });
 
-		this.comparisonContainer.createEl('h3', { text: 'Heat Comparison' });
+		this.comparisonContainer.createEl('h3', { text: 'Heat comparison' });
 
 		// This will be populated when a snapshot is loaded
 		this.comparisonContainer.createEl('div', { cls: 'ember-stats-grid' });
@@ -235,14 +236,14 @@ export class TimelineView extends ItemView {
 		const actionsContainer = container.createEl('div', { cls: 'ember-timeline-actions' });
 
 		const returnBtn = actionsContainer.createEl('button', {
-			text: 'Return to Current',
+			text: 'Return to current',
 			cls: 'mod-cta'
 		});
 		returnBtn.title = 'Exit historical view and return to live heat data';
 		returnBtn.setAttribute('aria-label', 'Return to current state');
-		returnBtn.addEventListener('click', async () => await this.returnToCurrent());
+		returnBtn.addEventListener('click', () => void this.returnToCurrent());
 
-		const exportBtn = actionsContainer.createEl('button', { text: 'Export This Snapshot' });
+		const exportBtn = actionsContainer.createEl('button', { text: 'Export this snapshot' });
 		exportBtn.title = 'Export this snapshot using Settings → Ember → Export/Import';
 		exportBtn.setAttribute('aria-label', 'Export current snapshot');
 		exportBtn.addEventListener('click', () => this.exportCurrentSnapshot());
@@ -267,10 +268,10 @@ export class TimelineView extends ItemView {
 		// Update date display
 		if (snapshot.date === 'Current') {
 			this.dateDisplay.textContent = 'Current';
-			this.historyIndicator.style.display = 'none';
+			this.historyIndicator.setCssStyles({ display: 'none' });
 		} else {
 			this.dateDisplay.textContent = this.formatDateLong(snapshot.timestamp);
-			this.historyIndicator.style.display = 'block';
+			this.historyIndicator.setCssStyles({ display: 'block' });
 		}
 
 		// Update slider position

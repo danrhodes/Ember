@@ -138,7 +138,7 @@ export class DecayManager {
 
 		// Trigger save unless silent
 		if (!silent) {
-			this.dataStore.save();
+			void this.dataStore.save();
 		}
 	}
 

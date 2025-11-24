@@ -207,12 +207,12 @@ export class VisualRenderer {
 			// Hot files
 			element.addClass('ember-hot');
 			const intensity = Math.min(100, ((heatScore - hotThreshold) / (100 - hotThreshold)) * 100);
-			element.style.setProperty('--ember-heat-intensity', `${intensity}`);
+			element.setCssProps({ '--ember-heat-intensity': `${intensity}` });
 		} else if (heatScore <= coldThreshold) {
 			// Cold files
 			element.addClass('ember-cold');
 			const intensity = Math.min(100, ((coldThreshold - heatScore) / coldThreshold) * 100);
-			element.style.setProperty('--ember-heat-intensity', `${intensity}`);
+			element.setCssProps({ '--ember-heat-intensity': `${intensity}` });
 		} else {
 			// Neutral (middle range) - no coloring if setting enabled
 			if (this.settings.standardMode.neutralUncolored) {
@@ -227,19 +227,20 @@ export class VisualRenderer {
 	 */
 	private applyEmergenceMode(element: HTMLElement, heatScore: number): void {
 		element.addClass('ember-emergence');
-		element.style.setProperty('--ember-heat-score', `${heatScore}`);
 
 		// Calculate gradient color for text
 		const color = this.getGradientColor(heatScore);
-		element.style.setProperty('--ember-gradient-color', color);
-		element.style.setProperty('color', color);
 
-		// Add font weight for higher heat
-		if (heatScore >= 60) {
-			element.style.setProperty('font-weight', '500');
-		} else {
-			element.style.setProperty('font-weight', '');
-		}
+		// Set CSS properties
+		element.setCssProps({
+			'--ember-heat-score': `${heatScore}`,
+			'--ember-gradient-color': color
+		});
+
+		element.setCssStyles({
+			color: color,
+			fontWeight: heatScore >= 60 ? '500' : ''
+		});
 	}
 
 	/**
@@ -289,7 +290,6 @@ export class VisualRenderer {
 	 */
 	private applyAnalyticalMode(element: HTMLElement, heatScore: number): void {
 		element.addClass('ember-analytical');
-		element.style.setProperty('--ember-heat-score', `${heatScore}`);
 
 		// Get file path from element
 		const filePath = this.getFilePathFromElement(element);
@@ -321,12 +321,6 @@ export class VisualRenderer {
 		const maxEdits = Math.max(...allHeatData.map(d => d.metrics.editCount));
 		const editIntensity = maxEdits > 0 ? (metrics.editCount / maxEdits) * 100 : 0;
 
-		// Set CSS custom properties for multi-dimensional styling
-		element.style.setProperty('--ember-frequency', `${frequencyIntensity}`);
-		element.style.setProperty('--ember-recency', `${recencyIntensity}`);
-		element.style.setProperty('--ember-duration', `${durationIntensity}`);
-		element.style.setProperty('--ember-edits', `${editIntensity}`);
-
 		// Determine dominant pattern
 		const pattern = this.determineAccessPattern(
 			frequencyIntensity,
@@ -339,20 +333,30 @@ export class VisualRenderer {
 
 		// Apply color based on dominant metric
 		const color = this.getAnalyticalColor(pattern, heatScore);
-		element.style.setProperty('--ember-analytical-color', color);
-		element.style.setProperty('color', color);
 
-		// Add visual indicator for pattern type
-		element.style.setProperty('--ember-pattern-indicator', this.getPatternIndicator(pattern));
+		// Set CSS custom properties for multi-dimensional styling
+		element.setCssProps({
+			'--ember-heat-score': `${heatScore}`,
+			'--ember-frequency': `${frequencyIntensity}`,
+			'--ember-recency': `${recencyIntensity}`,
+			'--ember-duration': `${durationIntensity}`,
+			'--ember-edits': `${editIntensity}`,
+			'--ember-analytical-color': color,
+			'--ember-pattern-indicator': this.getPatternIndicator(pattern)
+		});
 
 		// Font weight based on overall heat
+		let fontWeight = '';
 		if (heatScore >= 70) {
-			element.style.setProperty('font-weight', '600');
+			fontWeight = '600';
 		} else if (heatScore >= 40) {
-			element.style.setProperty('font-weight', '500');
-		} else {
-			element.style.setProperty('font-weight', '');
+			fontWeight = '500';
 		}
+
+		element.setCssStyles({
+			color: color,
+			fontWeight: fontWeight
+		});
 	}
 
 	/**
@@ -490,8 +494,10 @@ export class VisualRenderer {
 		}
 
 		// Remove custom properties
-		element.style.removeProperty('--ember-heat-intensity');
-		element.style.removeProperty('--ember-heat-score');
+		element.setCssProps({
+			'--ember-heat-intensity': '',
+			'--ember-heat-score': ''
+		});
 	}
 
 	/**

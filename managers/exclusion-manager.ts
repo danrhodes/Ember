@@ -199,7 +199,7 @@ export class ExclusionManager {
 	 * @param pattern - Pattern to match
 	 * @param enabled - Whether rule is enabled (default: true)
 	 */
-	addExclusion(type: 'path' | 'glob' | 'tag', pattern: string, enabled: boolean = true): void {
+	addExclusion(type: 'path' | 'glob' | 'tag', pattern: string, enabled = true): void {
 		const rule: ExclusionRule = {
 			type,
 			pattern,

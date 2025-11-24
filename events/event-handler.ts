@@ -249,7 +249,7 @@ export class EventHandler {
 		}
 
 		this.debounceTimer = window.setTimeout(() => {
-			this.dataStore.save();
+			void this.dataStore.save();
 			this.debounceTimer = null;
 		}, this.DEBOUNCE_MS);
 	}

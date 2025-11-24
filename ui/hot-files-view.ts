@@ -74,7 +74,7 @@ export class HotFilesView extends ItemView {
 
 		// Add header
 		const header = container.createEl('div', { cls: 'ember-panel-header' });
-		header.createEl('h4', { text: 'Hot Files' });
+		header.createEl('h4', { text: 'Hot files' });
 
 		const timeWindowDays = this.settings.hotFilesTimeWindow;
 		const subtitle = timeWindowDays === 1
@@ -91,9 +91,9 @@ export class HotFilesView extends ItemView {
 		const searchInput = searchContainer.createEl('input', {
 			cls: 'ember-search-input',
 			type: 'text',
-			placeholder: 'Search files...'
-		}) as HTMLInputElement;
-		searchInput.value = this.searchQuery;
+			placeholder: 'Search files...',
+			value: this.searchQuery
+		});
 		searchInput.addEventListener('input', (e) => {
 			this.searchQuery = (e.target as HTMLInputElement).value;
 			this.renderFileList(container, timeWindowDays);
@@ -158,7 +158,7 @@ export class HotFilesView extends ItemView {
 				const checkbox = itemEl.createEl('input', {
 					type: 'checkbox',
 					cls: 'ember-file-checkbox'
-				}) as HTMLInputElement;
+				});
 				checkbox.checked = this.selectedFiles.has(heatData.path);
 				checkbox.addEventListener('change', (e) => {
 					e.stopPropagation();
@@ -185,9 +185,9 @@ export class HotFilesView extends ItemView {
 				text: this.getFileName(heatData.path)
 			});
 
-			linkEl.addEventListener('click', async (e) => {
+			linkEl.addEventListener('click', (e) => {
 				e.preventDefault();
-				await this.openFile(heatData.path);
+				void this.openFile(heatData.path);
 			});
 
 			// Stats row
@@ -396,7 +396,7 @@ export class HotFilesView extends ItemView {
 			// Select all button
 			const selectAllBtn = actionsContainer.createEl('button', {
 				cls: 'ember-batch-btn ember-batch-select-all',
-				text: 'Select All'
+				text: 'Select all'
 			});
 			selectAllBtn.addEventListener('click', () => this.selectAll(container, timeWindowDays));
 

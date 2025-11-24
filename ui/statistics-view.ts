@@ -72,7 +72,7 @@ export class StatisticsView extends ItemView {
 
 		// Header
 		const header = container.createEl('div', { cls: 'ember-panel-header' });
-		header.createEl('h4', { text: 'Vault Statistics' });
+		header.createEl('h4', { text: 'Vault statistics' });
 		header.createEl('div', {
 			text: `Last updated: ${new Date().toLocaleTimeString()}`,
 			cls: 'ember-panel-subtitle'
@@ -81,7 +81,7 @@ export class StatisticsView extends ItemView {
 		// Empty state
 		if (allHeatData.length === 0) {
 			const emptyState = container.createEl('div', { cls: 'ember-empty-state' });
-			emptyState.createEl('h3', { text: '📊 No Statistics Yet' });
+			emptyState.createEl('h3', { text: '📊 No statistics yet' });
 			emptyState.createEl('p', { text: 'Heat data will appear as you use your vault.' });
 			const tipsList = emptyState.createEl('ul', { cls: 'ember-empty-tips' });
 			tipsList.createEl('li', { text: 'Open and edit files to generate heat' });
@@ -150,7 +150,7 @@ export class StatisticsView extends ItemView {
 	 */
 	private renderHeatDistribution(container: HTMLElement, allHeatData: HeatData[]): void {
 		const section = container.createEl('div', { cls: 'ember-stats-section' });
-		section.createEl('h3', { text: 'Heat Distribution' });
+		section.createEl('h3', { text: 'Heat distribution' });
 
 		// Categorize files by heat level
 		const distribution = {
@@ -177,7 +177,7 @@ export class StatisticsView extends ItemView {
 	 */
 	private renderActivityTrends(container: HTMLElement, allHeatData: HeatData[]): void {
 		const section = container.createEl('div', { cls: 'ember-stats-section' });
-		section.createEl('h3', { text: 'Activity Trends (Last 7 Days)' });
+		section.createEl('h3', { text: 'Activity trends (last 7 days)' });
 
 		// Calculate daily activity for the last 7 days
 		const now = Date.now();
@@ -237,7 +237,7 @@ export class StatisticsView extends ItemView {
 	 */
 	private renderTopFolders(container: HTMLElement, allHeatData: HeatData[]): void {
 		const section = container.createEl('div', { cls: 'ember-stats-section' });
-		section.createEl('h3', { text: 'Top Folders by Activity' });
+		section.createEl('h3', { text: 'Top folders by activity' });
 
 		// Group by folder
 		const folderStats = new Map<string, { count: number; totalHeat: number }>();
@@ -302,7 +302,7 @@ export class StatisticsView extends ItemView {
 	 */
 	private renderSessionStats(container: HTMLElement, allHeatData: HeatData[]): void {
 		const section = container.createEl('div', { cls: 'ember-stats-section' });
-		section.createEl('h3', { text: 'Recent Activity' });
+		section.createEl('h3', { text: 'Recent activity' });
 
 		const now = Date.now();
 		const oneDay = 24 * 60 * 60 * 1000;
@@ -337,7 +337,9 @@ export class StatisticsView extends ItemView {
 		}
 
 		const iconEl = card.createEl('div', { cls: 'ember-stat-icon' });
-		iconEl.innerHTML = `<svg class="svg-icon lucide-${icon}"><use href="#lucide-${icon}"></use></svg>`;
+		const svgEl = iconEl.createSvg('svg', { cls: `svg-icon lucide-${icon}` });
+		const useEl = svgEl.createSvg('use');
+		useEl.setAttr('href', `#lucide-${icon}`);
 
 		const content = card.createEl('div', { cls: 'ember-stat-content' });
 		content.createEl('div', { text: value, cls: 'ember-stat-value' });
@@ -419,7 +421,7 @@ export class StatisticsView extends ItemView {
 	 */
 	private renderActivityCalendar(container: HTMLElement, allHeatData: HeatData[]): void {
 		const section = container.createEl('div', { cls: 'ember-stats-section' });
-		section.createEl('h3', { text: 'Activity Calendar (Last 30 Days)' });
+		section.createEl('h3', { text: 'Activity calendar (last 30 days)' });
 
 		const now = Date.now();
 		const oneDay = 24 * 60 * 60 * 1000;
@@ -475,7 +477,7 @@ export class StatisticsView extends ItemView {
 	 */
 	private renderPeakActivityTimes(container: HTMLElement, allHeatData: HeatData[]): void {
 		const section = container.createEl('div', { cls: 'ember-stats-section' });
-		section.createEl('h3', { text: 'Peak Activity Times' });
+		section.createEl('h3', { text: 'Peak activity times' });
 
 		// Group activity by hour of day (0-23)
 		const hourlyActivity = new Array(24).fill(0);

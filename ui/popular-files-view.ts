@@ -92,7 +92,7 @@ export class PopularFilesView extends ItemView {
 
 		// Add header
 		const header = container.createEl('div', { cls: 'ember-panel-header' });
-		header.createEl('h4', { text: 'Most Popular Files' });
+		header.createEl('h4', { text: 'Most popular files' });
 		header.createEl('div', {
 			cls: 'ember-panel-subtitle',
 			text: `Top ${this.settings.popularFilesCount} by access count`
@@ -103,9 +103,9 @@ export class PopularFilesView extends ItemView {
 		const searchInput = searchContainer.createEl('input', {
 			cls: 'ember-search-input',
 			type: 'text',
-			placeholder: 'Search files...'
-		}) as HTMLInputElement;
-		searchInput.value = this.searchQuery;
+			placeholder: 'Search files...',
+			value: this.searchQuery
+		});
 		searchInput.addEventListener('input', (e) => {
 			this.searchQuery = (e.target as HTMLInputElement).value;
 			this.renderFileList(container);
@@ -174,7 +174,7 @@ export class PopularFilesView extends ItemView {
 				const checkbox = itemEl.createEl('input', {
 					type: 'checkbox',
 					cls: 'ember-file-checkbox'
-				}) as HTMLInputElement;
+				});
 				checkbox.checked = this.selectedFiles.has(heatData.path);
 				checkbox.addEventListener('change', (e) => {
 					e.stopPropagation();
@@ -201,9 +201,9 @@ export class PopularFilesView extends ItemView {
 				text: this.getFileName(heatData.path)
 			});
 
-			linkEl.addEventListener('click', async (e) => {
+			linkEl.addEventListener('click', (e) => {
 				e.preventDefault();
-				await this.openFile(heatData.path);
+				void this.openFile(heatData.path);
 			});
 
 			// Stats row
@@ -345,7 +345,7 @@ export class PopularFilesView extends ItemView {
 		if (activeFilterCount > 0) {
 			const clearButton = filterContainer.createEl('button', {
 				cls: 'ember-filter-clear',
-				text: 'Clear All Filters'
+				text: 'Clear all filters'
 			});
 			clearButton.addEventListener('click', () => this.clearAllFilters(container));
 		}
@@ -392,7 +392,7 @@ export class PopularFilesView extends ItemView {
 			cls: 'ember-filter-input',
 			placeholder: 'e.g., Projects/Work',
 			value: this.filterState.folderPath
-		}) as HTMLInputElement;
+		});
 		folderInput.addEventListener('input', (e) => {
 			this.filterState.folderPath = (e.target as HTMLInputElement).value;
 			this.renderFileList(container.parentElement as HTMLElement);
@@ -409,7 +409,7 @@ export class PopularFilesView extends ItemView {
 			placeholder: 'Min',
 			value: this.filterState.heatMin.toString(),
 			attr: { min: '0', max: '100' }
-		}) as HTMLInputElement;
+		});
 
 		heatRangeContainer.createEl('span', { text: ' - ' });
 
@@ -419,7 +419,7 @@ export class PopularFilesView extends ItemView {
 			placeholder: 'Max',
 			value: this.filterState.heatMax.toString(),
 			attr: { min: '0', max: '100' }
-		}) as HTMLInputElement;
+		});
 
 		minInput.addEventListener('change', (e) => {
 			this.filterState.heatMin = parseInt((e.target as HTMLInputElement).value) || 0;
@@ -437,7 +437,7 @@ export class PopularFilesView extends ItemView {
 		const dateSelect = dateGroup.createEl('select', {
 			cls: 'ember-filter-select',
 			value: this.filterState.dateRange
-		}) as HTMLSelectElement;
+		});
 
 		['all', 'today', 'week', 'month', 'custom'].forEach(option => {
 			const optionEl = dateSelect.createEl('option', {
@@ -557,7 +557,7 @@ export class PopularFilesView extends ItemView {
 			// Select all button
 			const selectAllBtn = actionsContainer.createEl('button', {
 				cls: 'ember-batch-btn ember-batch-select-all',
-				text: 'Select All'
+				text: 'Select all'
 			});
 			selectAllBtn.addEventListener('click', () => this.selectAll(container));
 

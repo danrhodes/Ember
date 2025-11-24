@@ -109,9 +109,9 @@ export class EmberSettingTab extends PluginSettingTab {
 				.setLimits(1, 10, 1)
 				.setValue(this.plugin.settings.backupCount)
 				.setDynamicTooltip()
-				.onChange((value) => {
+				.onChange(async (value) => {
 					this.plugin.settings.backupCount = value;
-					void this.plugin.saveSettings();
+					await this.plugin.saveSettings();
 				})
 			);
 	}
@@ -140,11 +140,10 @@ export class EmberSettingTab extends PluginSettingTab {
 			.addButton(button => button
 				.setButtonText('Migrate All')
 				.setIcon('database')
-				.onClick(() => {
+				.onClick(async () => {
 					const propManager = this.plugin.getPropertyStorageManager();
-					void propManager.writeAllToProperties(true).then(() => {
-						this.display(); // Refresh display
-					});
+					await propManager.writeAllToProperties(true);
+					this.display(); // Refresh display
 				})
 			);
 
@@ -155,11 +154,10 @@ export class EmberSettingTab extends PluginSettingTab {
 				.setButtonText('Remove All')
 				.setIcon('trash')
 				.setWarning()
-				.onClick(() => {
+				.onClick(async () => {
 					const propManager = this.plugin.getPropertyStorageManager();
-					void propManager.removeAllProperties(true).then(() => {
-						this.display(); // Refresh display
-					});
+					await propManager.removeAllProperties(true);
+					this.display(); // Refresh display
 				})
 			);
 
@@ -194,12 +192,11 @@ export class EmberSettingTab extends PluginSettingTab {
 			.addButton(button => button
 				.setButtonText('Resolve')
 				.setIcon('check-circle')
-				.onClick(() => {
+				.onClick(async () => {
 					const propManager = this.plugin.getPropertyStorageManager();
-					void propManager.resolveConflicts(conflictStrategy).then((stats) => {
-						new Notice(`Ember: ${stats.conflicts} conflicts found, ${stats.resolved} resolved.`);
-						this.display(); // Refresh display
-					});
+					const stats = await propManager.resolveConflicts(conflictStrategy);
+					new Notice(`Ember: ${stats.conflicts} conflicts found, ${stats.resolved} resolved.`);
+					this.display(); // Refresh display
 				})
 			);
 
@@ -253,9 +250,9 @@ export class EmberSettingTab extends PluginSettingTab {
 				.setLimits(0, 100, 5)
 				.setValue(this.plugin.settings.metricWeights.frequency)
 				.setDynamicTooltip()
-				.onChange((value) => {
+				.onChange(async (value) => {
 					this.plugin.settings.metricWeights.frequency = value;
-					void this.plugin.saveSettings();
+					await this.plugin.saveSettings();
 					this.updateWeightDisplay();
 				})
 			);
@@ -267,9 +264,9 @@ export class EmberSettingTab extends PluginSettingTab {
 				.setLimits(0, 100, 5)
 				.setValue(this.plugin.settings.metricWeights.recency)
 				.setDynamicTooltip()
-				.onChange((value) => {
+				.onChange(async (value) => {
 					this.plugin.settings.metricWeights.recency = value;
-					void this.plugin.saveSettings();
+					await this.plugin.saveSettings();
 					this.updateWeightDisplay();
 				})
 			);
@@ -281,9 +278,9 @@ export class EmberSettingTab extends PluginSettingTab {
 				.setLimits(0, 100, 5)
 				.setValue(this.plugin.settings.metricWeights.succession)
 				.setDynamicTooltip()
-				.onChange((value) => {
+				.onChange(async (value) => {
 					this.plugin.settings.metricWeights.succession = value;
-					void this.plugin.saveSettings();
+					await this.plugin.saveSettings();
 					this.updateWeightDisplay();
 				})
 			);
@@ -295,9 +292,9 @@ export class EmberSettingTab extends PluginSettingTab {
 				.setLimits(0, 100, 5)
 				.setValue(this.plugin.settings.metricWeights.duration)
 				.setDynamicTooltip()
-				.onChange((value) => {
+				.onChange(async (value) => {
 					this.plugin.settings.metricWeights.duration = value;
-					void this.plugin.saveSettings();
+					await this.plugin.saveSettings();
 					this.updateWeightDisplay();
 				})
 			);
@@ -309,9 +306,9 @@ export class EmberSettingTab extends PluginSettingTab {
 				.setLimits(0, 100, 5)
 				.setValue(this.plugin.settings.metricWeights.edits)
 				.setDynamicTooltip()
-				.onChange((value) => {
+				.onChange(async (value) => {
 					this.plugin.settings.metricWeights.edits = value;
-					void this.plugin.saveSettings();
+					await this.plugin.saveSettings();
 					this.updateWeightDisplay();
 				})
 			);
@@ -337,9 +334,9 @@ export class EmberSettingTab extends PluginSettingTab {
 				.setLimits(1, 20, 1)
 				.setValue(this.plugin.settings.heatIncrements.fileOpen)
 				.setDynamicTooltip()
-				.onChange((value) => {
+				.onChange(async (value) => {
 					this.plugin.settings.heatIncrements.fileOpen = value;
-					void this.plugin.saveSettings();
+					await this.plugin.saveSettings();
 				})
 			);
 
@@ -350,9 +347,9 @@ export class EmberSettingTab extends PluginSettingTab {
 				.setLimits(1, 30, 1)
 				.setValue(this.plugin.settings.heatIncrements.fileEdit)
 				.setDynamicTooltip()
-				.onChange((value) => {
+				.onChange(async (value) => {
 					this.plugin.settings.heatIncrements.fileEdit = value;
-					void this.plugin.saveSettings();
+					await this.plugin.saveSettings();
 				})
 			);
 
@@ -363,9 +360,9 @@ export class EmberSettingTab extends PluginSettingTab {
 				.setLimits(1, 10, 1)
 				.setValue(this.plugin.settings.heatIncrements.quickReturn)
 				.setDynamicTooltip()
-				.onChange((value) => {
+				.onChange(async (value) => {
 					this.plugin.settings.heatIncrements.quickReturn = value;
-					void this.plugin.saveSettings();
+					await this.plugin.saveSettings();
 				})
 			);
 
@@ -376,9 +373,9 @@ export class EmberSettingTab extends PluginSettingTab {
 				.setLimits(10, 100, 5)
 				.setValue(this.plugin.settings.manualBoostValue)
 				.setDynamicTooltip()
-				.onChange((value) => {
+				.onChange(async (value) => {
 					this.plugin.settings.manualBoostValue = value;
-					void this.plugin.saveSettings();
+					await this.plugin.saveSettings();
 				})
 			);
 	}
@@ -398,9 +395,9 @@ export class EmberSettingTab extends PluginSettingTab {
 				.setLimits(5, 120, 5)
 				.setValue(this.plugin.settings.decayInterval)
 				.setDynamicTooltip()
-				.onChange((value) => {
+				.onChange(async (value) => {
 					this.plugin.settings.decayInterval = value;
-					void this.plugin.saveSettings();
+					await this.plugin.saveSettings();
 				})
 			);
 
@@ -411,9 +408,9 @@ export class EmberSettingTab extends PluginSettingTab {
 				.setLimits(1, 20, 1)
 				.setValue(this.plugin.settings.decayRate)
 				.setDynamicTooltip()
-				.onChange((value) => {
+				.onChange(async (value) => {
 					this.plugin.settings.decayRate = value;
-					void this.plugin.saveSettings();
+					await this.plugin.saveSettings();
 				})
 			);
 
@@ -422,9 +419,9 @@ export class EmberSettingTab extends PluginSettingTab {
 			.setDesc('High heat files decay faster (natural cooling)')
 			.addToggle(toggle => toggle
 				.setValue(this.plugin.settings.differentialDecay)
-				.onChange((value) => {
+				.onChange(async (value) => {
 					this.plugin.settings.differentialDecay = value;
-					void this.plugin.saveSettings();
+					await this.plugin.saveSettings();
 				})
 			);
 
@@ -433,9 +430,9 @@ export class EmberSettingTab extends PluginSettingTab {
 			.setDesc('Favorited files don\'t lose heat over time')
 			.addToggle(toggle => toggle
 				.setValue(this.plugin.settings.pauseDecayForFavorites)
-				.onChange((value) => {
+				.onChange(async (value) => {
 					this.plugin.settings.pauseDecayForFavorites = value;
-					void this.plugin.saveSettings();
+					await this.plugin.saveSettings();
 				})
 			);
 
@@ -444,9 +441,9 @@ export class EmberSettingTab extends PluginSettingTab {
 			.setDesc('Apply decay for time Obsidian was closed')
 			.addToggle(toggle => toggle
 				.setValue(this.plugin.settings.calculateDecayWhileClosed)
-				.onChange((value) => {
+				.onChange(async (value) => {
 					this.plugin.settings.calculateDecayWhileClosed = value;
-					void this.plugin.saveSettings();
+					await this.plugin.saveSettings();
 				})
 			);
 	}
@@ -469,9 +466,9 @@ export class EmberSettingTab extends PluginSettingTab {
 					[VisualizationMode.ANALYTICAL]: 'Analytical (Phase 3)'
 				})
 				.setValue(this.plugin.settings.visualizationMode)
-				.onChange((value) => {
+				.onChange(async (value) => {
 					this.plugin.settings.visualizationMode = value as VisualizationMode;
-					void this.plugin.saveSettings();
+					await this.plugin.saveSettings();
 				})
 			);
 
@@ -480,9 +477,9 @@ export class EmberSettingTab extends PluginSettingTab {
 			.setDesc('Smooth transitions and pulse effects')
 			.addToggle(toggle => toggle
 				.setValue(this.plugin.settings.enableAnimations)
-				.onChange((value) => {
+				.onChange(async (value) => {
 					this.plugin.settings.enableAnimations = value;
-					void this.plugin.saveSettings();
+					await this.plugin.saveSettings();
 				})
 			);
 
@@ -496,9 +493,9 @@ export class EmberSettingTab extends PluginSettingTab {
 			.addText(text => text
 				.setPlaceholder('#dc2626')
 				.setValue(this.plugin.settings.standardMode.hotColor)
-				.onChange((value) => {
+				.onChange(async (value) => {
 					this.plugin.settings.standardMode.hotColor = value || '#dc2626';
-					void this.plugin.saveSettings();
+					await this.plugin.saveSettings();
 				})
 			);
 
@@ -508,9 +505,9 @@ export class EmberSettingTab extends PluginSettingTab {
 			.addText(text => text
 				.setPlaceholder('#3b82f6')
 				.setValue(this.plugin.settings.standardMode.coldColor)
-				.onChange((value) => {
+				.onChange(async (value) => {
 					this.plugin.settings.standardMode.coldColor = value || '#3b82f6';
-					void this.plugin.saveSettings();
+					await this.plugin.saveSettings();
 				})
 			);
 
@@ -521,9 +518,9 @@ export class EmberSettingTab extends PluginSettingTab {
 				.setLimits(1, 50, 1)
 				.setValue(this.plugin.settings.standardMode.hotThreshold)
 				.setDynamicTooltip()
-				.onChange((value) => {
+				.onChange(async (value) => {
 					this.plugin.settings.standardMode.hotThreshold = value;
-					void this.plugin.saveSettings();
+					await this.plugin.saveSettings();
 				})
 			);
 
@@ -534,9 +531,9 @@ export class EmberSettingTab extends PluginSettingTab {
 				.setLimits(1, 50, 1)
 				.setValue(this.plugin.settings.standardMode.coldThreshold)
 				.setDynamicTooltip()
-				.onChange((value) => {
+				.onChange(async (value) => {
 					this.plugin.settings.standardMode.coldThreshold = value;
-					void this.plugin.saveSettings();
+					await this.plugin.saveSettings();
 				})
 			);
 
@@ -545,9 +542,9 @@ export class EmberSettingTab extends PluginSettingTab {
 			.setDesc('Show heat colors in file explorer')
 			.addToggle(toggle => toggle
 				.setValue(this.plugin.settings.applyToFileExplorer)
-				.onChange((value) => {
+				.onChange(async (value) => {
 					this.plugin.settings.applyToFileExplorer = value;
-					void this.plugin.saveSettings();
+					await this.plugin.saveSettings();
 				})
 			);
 
@@ -556,9 +553,9 @@ export class EmberSettingTab extends PluginSettingTab {
 			.setDesc('Show heat colors on tab headers')
 			.addToggle(toggle => toggle
 				.setValue(this.plugin.settings.applyToTabs)
-				.onChange((value) => {
+				.onChange(async (value) => {
 					this.plugin.settings.applyToTabs = value;
-					void this.plugin.saveSettings();
+					await this.plugin.saveSettings();
 				})
 			);
 	}
@@ -645,19 +642,18 @@ export class EmberSettingTab extends PluginSettingTab {
 				.addToggle(toggle => toggle
 					.setValue(rule.enabled)
 					.setTooltip(rule.enabled ? 'Enabled' : 'Disabled')
-					.onChange((value) => {
+					.onChange(async (value) => {
 						rule.enabled = value;
-						void this.plugin.saveSettings();
+						await this.plugin.saveSettings();
 					})
 				)
 				.addButton(button => button
 					.setIcon('trash')
 					.setTooltip('Delete')
-					.onClick(() => {
+					.onClick(async () => {
 						this.plugin.settings.exclusionRules = this.plugin.settings.exclusionRules.filter(r => r !== rule);
-						void this.plugin.saveSettings().then(() => {
-							this.display(); // Refresh settings display
-						});
+						await this.plugin.saveSettings();
+						this.display(); // Refresh settings display
 					})
 				);
 		});
@@ -694,9 +690,9 @@ export class EmberSettingTab extends PluginSettingTab {
 			.setDesc('Display heat info in status bar')
 			.addToggle(toggle => toggle
 				.setValue(this.plugin.settings.showStatusBar)
-				.onChange((value) => {
+				.onChange(async (value) => {
 					this.plugin.settings.showStatusBar = value;
-					void this.plugin.saveSettings();
+					await this.plugin.saveSettings();
 				})
 			);
 
@@ -705,9 +701,9 @@ export class EmberSettingTab extends PluginSettingTab {
 			.setDesc('Display Ember icon in left ribbon')
 			.addToggle(toggle => toggle
 				.setValue(this.plugin.settings.showRibbonIcon)
-				.onChange((value) => {
+				.onChange(async (value) => {
 					this.plugin.settings.showRibbonIcon = value;
-					void this.plugin.saveSettings();
+					await this.plugin.saveSettings();
 				})
 			);
 
@@ -718,9 +714,9 @@ export class EmberSettingTab extends PluginSettingTab {
 				.setLimits(5, 50, 5)
 				.setValue(this.plugin.settings.popularFilesCount)
 				.setDynamicTooltip()
-				.onChange((value) => {
+				.onChange(async (value) => {
 					this.plugin.settings.popularFilesCount = value;
-					void this.plugin.saveSettings();
+					await this.plugin.saveSettings();
 				})
 			);
 
@@ -731,9 +727,9 @@ export class EmberSettingTab extends PluginSettingTab {
 				.setLimits(1, 30, 1)
 				.setValue(this.plugin.settings.hotFilesTimeWindow)
 				.setDynamicTooltip()
-				.onChange((value) => {
+				.onChange(async (value) => {
 					this.plugin.settings.hotFilesTimeWindow = value;
-					void this.plugin.saveSettings();
+					await this.plugin.saveSettings();
 				})
 			);
 
@@ -744,9 +740,9 @@ export class EmberSettingTab extends PluginSettingTab {
 				.setLimits(10, 100, 5)
 				.setValue(this.plugin.settings.opacity)
 				.setDynamicTooltip()
-				.onChange((value) => {
+				.onChange(async (value) => {
 					this.plugin.settings.opacity = value;
-					void this.plugin.saveSettings();
+					await this.plugin.saveSettings();
 				})
 			);
 
@@ -755,9 +751,9 @@ export class EmberSettingTab extends PluginSettingTab {
 			.setDesc('Add Ember actions to right-click menus')
 			.addToggle(toggle => toggle
 				.setValue(this.plugin.settings.enableContextMenus)
-				.onChange((value) => {
+				.onChange(async (value) => {
 					this.plugin.settings.enableContextMenus = value;
-					void this.plugin.saveSettings();
+					await this.plugin.saveSettings();
 				})
 			);
 	}
@@ -780,9 +776,9 @@ export class EmberSettingTab extends PluginSettingTab {
 			.setDesc('Create periodic snapshots of heat data for historical analysis')
 			.addToggle(toggle => toggle
 				.setValue(this.plugin.settings.archival.enabled)
-				.onChange((value) => {
+				.onChange(async (value) => {
 					this.plugin.settings.archival.enabled = value;
-					void this.plugin.saveSettings();
+					await this.plugin.saveSettings();
 				})
 			);
 
@@ -794,9 +790,9 @@ export class EmberSettingTab extends PluginSettingTab {
 				.addOption('daily', 'Daily')
 				.addOption('weekly', 'Weekly')
 				.setValue(this.plugin.settings.archival.snapshotFrequency)
-				.onChange((value: 'hourly' | 'daily' | 'weekly') => {
+				.onChange(async (value: 'hourly' | 'daily' | 'weekly') => {
 					this.plugin.settings.archival.snapshotFrequency = value;
-					void this.plugin.saveSettings();
+					await this.plugin.saveSettings();
 				})
 			);
 
@@ -807,9 +803,9 @@ export class EmberSettingTab extends PluginSettingTab {
 				.setLimits(7, 365, 7)
 				.setValue(this.plugin.settings.archival.retentionDays)
 				.setDynamicTooltip()
-				.onChange((value) => {
+				.onChange(async (value) => {
 					this.plugin.settings.archival.retentionDays = value;
-					void this.plugin.saveSettings();
+					await this.plugin.saveSettings();
 				})
 			);
 
@@ -820,9 +816,9 @@ export class EmberSettingTab extends PluginSettingTab {
 				.setLimits(10, 500, 10)
 				.setValue(this.plugin.settings.archival.maxSnapshots)
 				.setDynamicTooltip()
-				.onChange((value) => {
+				.onChange(async (value) => {
 					this.plugin.settings.archival.maxSnapshots = value;
-					void this.plugin.saveSettings();
+					await this.plugin.saveSettings();
 				})
 			);
 
@@ -957,32 +953,32 @@ export class EmberSettingTab extends PluginSettingTab {
 			.addButton(button => button
 				.setButtonText('Import JSON')
 				.setIcon('upload')
-				.onClick(() => {
+				.onClick(async () => {
 					// Create file input element
 					const input = document.createElement('input');
 					input.type = 'file';
 					input.accept = '.json';
-					input.onchange = (e: Event) => {
+					input.onchange = async (e: Event) => {
 						const target = e.target as HTMLInputElement;
 						const file = target.files?.[0];
 						if (file) {
 							const reader = new FileReader();
-							reader.onload = (event) => {
+							reader.onload = async (event) => {
 								const jsonString = event.target?.result as string;
 								const exportManager = this.plugin.getExportImportManager();
-								void exportManager.importFromJSON(
+								const result = await exportManager.importFromJSON(
 									jsonString,
 									importStrategy,
 									createBackup
-								).then((result) => {
-									if (result.success) {
-										new Notice(result.message);
-										// Refresh the display
-										this.display();
-									} else {
-										new Notice(`Import failed: ${result.message}`);
-									}
-								});
+								);
+
+								if (result.success) {
+									new Notice(result.message);
+									// Refresh the display
+									this.display();
+								} else {
+									new Notice(`Import failed: ${result.message}`);
+								}
 							};
 							reader.readAsText(file);
 						}
@@ -1005,9 +1001,9 @@ export class EmberSettingTab extends PluginSettingTab {
 			.setDesc('Enable console logging for debugging')
 			.addToggle(toggle => toggle
 				.setValue(this.plugin.settings.debugLogging)
-				.onChange((value) => {
+				.onChange(async (value) => {
 					this.plugin.settings.debugLogging = value;
-					void this.plugin.saveSettings();
+					await this.plugin.saveSettings();
 				})
 			);
 
@@ -1018,9 +1014,9 @@ export class EmberSettingTab extends PluginSettingTab {
 				.setLimits(1000, 10000, 1000)
 				.setValue(this.plugin.settings.updateDebounce)
 				.setDynamicTooltip()
-				.onChange((value) => {
+				.onChange(async (value) => {
 					this.plugin.settings.updateDebounce = value;
-					void this.plugin.saveSettings();
+					await this.plugin.saveSettings();
 				})
 			);
 
@@ -1031,7 +1027,7 @@ export class EmberSettingTab extends PluginSettingTab {
 			.addButton(button => button
 				.setButtonText('Reset')
 				.setWarning()
-				.onClick(() => {
+				.onClick(async () => {
 					// TODO: Implement reset functionality
 					new Notice('Reset functionality will be added in Phase 1.13');
 				})

@@ -91,9 +91,10 @@ export class DataStore {
 				window.clearTimeout(this.saveTimeout);
 			}
 
-			this.saveTimeout = window.setTimeout(async () => {
-				await this.performSave();
-				this.saveTimeout = null;
+			this.saveTimeout = window.setTimeout(() => {
+				void this.performSave().then(() => {
+					this.saveTimeout = null;
+				});
 			}, this.SAVE_DEBOUNCE_MS);
 		}
 	}
@@ -255,7 +256,7 @@ export class DataStore {
 		const sampleSize = Math.min(5, entries.length);
 
 		for (let i = 0; i < sampleSize; i++) {
-			const [, heatData] = entries[i] as [string, unknown];
+			const [, heatData] = entries[i];
 
 			if (typeof heatData !== 'object' || !heatData) return false;
 			const heatRecord = heatData as Record<string, unknown>;
@@ -264,6 +265,7 @@ export class DataStore {
 			if (!heatRecord.path || !heatRecord.metrics) return false;
 
 			// Validate metrics structure
+			if (typeof heatRecord.metrics !== 'object' || !heatRecord.metrics) return false;
 			const metrics = heatRecord.metrics as Record<string, unknown>;
 			if (
 				typeof metrics.accessCount !== 'number' ||

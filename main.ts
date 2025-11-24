@@ -147,23 +147,23 @@ export default class EmberPlugin extends Plugin {
 		this.addSettingTab(new EmberSettingTab(this.app, this));
 
 		// 18. Add ribbon icon to open Popular Files view
-		this.addRibbonIcon('flame', 'Open Popular Files', async () => {
-			await this.activatePopularFilesView();
+		this.addRibbonIcon('flame', 'Open Popular Files', () => {
+			void this.activatePopularFilesView();
 		});
 
 		// 19. Add ribbon icon to open Hot Files view
-		this.addRibbonIcon('fire', 'Open Hot Files', async () => {
-			await this.activateHotFilesView();
+		this.addRibbonIcon('fire', 'Open Hot Files', () => {
+			void this.activateHotFilesView();
 		});
 
 		// 20. Add ribbon icon to open Statistics view
-		this.addRibbonIcon('bar-chart-2', 'Open Statistics', async () => {
-			await this.activateStatisticsView();
+		this.addRibbonIcon('bar-chart-2', 'Open Statistics', () => {
+			void this.activateStatisticsView();
 		});
 
 		// 21. Add ribbon icon to open Timeline view
-		this.addRibbonIcon('history', 'Open Timeline', async () => {
-			await this.activateTimelineView();
+		this.addRibbonIcon('history', 'Open Timeline', () => {
+			void this.activateTimelineView();
 		});
 
 		// 23. Add commands
@@ -177,7 +177,7 @@ export default class EmberPlugin extends Plugin {
 
 		this.addCommand({
 			id: 'open-statistics',
-			name: 'Open Statistics',
+			name: 'Open statistics',
 			callback: async () => {
 				await this.activateStatisticsView();
 			}
@@ -185,7 +185,7 @@ export default class EmberPlugin extends Plugin {
 
 		this.addCommand({
 			id: 'open-timeline',
-			name: 'Open Timeline',
+			name: 'Open timeline',
 			callback: async () => {
 				await this.activateTimelineView();
 			}
@@ -193,7 +193,7 @@ export default class EmberPlugin extends Plugin {
 
 		this.addCommand({
 			id: 'open-popular-files',
-			name: 'Open Popular Files',
+			name: 'Open popular files',
 			callback: async () => {
 				await this.activatePopularFilesView();
 			}
@@ -201,7 +201,7 @@ export default class EmberPlugin extends Plugin {
 
 		this.addCommand({
 			id: 'open-hot-files',
-			name: 'Open Hot Files',
+			name: 'Open hot files',
 			callback: async () => {
 				await this.activateHotFilesView();
 			}
@@ -440,7 +440,7 @@ export default class EmberPlugin extends Plugin {
 		this.heatManager.setFavorite(file.path, !isFavorite);
 
 		// Save data
-		this.dataStore.save();
+		void this.dataStore.save();
 
 		// Force visual update
 		if (this.visualRenderer) {
@@ -469,7 +469,7 @@ export default class EmberPlugin extends Plugin {
 
 		const fileName = activeFile.basename;
 		this.heatManager.resetFileHeat(activeFile.path);
-		this.dataStore.save();
+		void this.dataStore.save();
 
 		if (this.visualRenderer) {
 			this.visualRenderer.forceUpdate();
@@ -620,7 +620,7 @@ Last accessed: ${new Date(heatData.metrics.lastAccessed).toLocaleDateString()}`;
 					.setIcon('thermometer')
 					.onClick(() => {
 						this.heatManager.resetFileHeat(file.path);
-						this.dataStore.save();
+						void this.dataStore.save();
 						new Notice(`Heat reset for "${file.basename}"`);
 						// Force visual update
 						if (this.visualRenderer) {
