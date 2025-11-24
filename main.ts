@@ -147,22 +147,22 @@ export default class EmberPlugin extends Plugin {
 		this.addSettingTab(new EmberSettingTab(this.app, this));
 
 		// 18. Add ribbon icon to open Popular Files view
-		this.addRibbonIcon('flame', 'Open Popular Files', () => {
+		this.addRibbonIcon('flame', 'OpenpPopular files', () => {
 			void this.activatePopularFilesView();
 		});
 
 		// 19. Add ribbon icon to open Hot Files view
-		this.addRibbonIcon('fire', 'Open Hot Files', () => {
+		this.addRibbonIcon('fire', 'OpenhHot files', () => {
 			void this.activateHotFilesView();
 		});
 
 		// 20. Add ribbon icon to open Statistics view
-		this.addRibbonIcon('bar-chart-2', 'Open Statistics', () => {
+		this.addRibbonIcon('bar-chart-2', 'Open statistics', () => {
 			void this.activateStatisticsView();
 		});
 
 		// 21. Add ribbon icon to open Timeline view
-		this.addRibbonIcon('history', 'Open Timeline', () => {
+		this.addRibbonIcon('history', 'Open timeline', () => {
 			void this.activateTimelineView();
 		});
 
@@ -475,7 +475,7 @@ export default class EmberPlugin extends Plugin {
 			this.visualRenderer.forceUpdate();
 		}
 
-		new Notice(`🔄 Heat reset for "${fileName}"`);
+		new Notice(`Heat reset for "${fileName}"`);
 	}
 
 	/**
@@ -492,7 +492,7 @@ export default class EmberPlugin extends Plugin {
 		const heatData = this.heatManager.getHeatData(activeFile.path);
 
 		if (!heatData) {
-			new Notice(`📊 "${activeFile.basename}" has no heat data yet`);
+			new Notice(`"${activeFile.basename}" has no heat data yet`);
 			return;
 		}
 
@@ -500,7 +500,7 @@ export default class EmberPlugin extends Plugin {
 		const heatLevel = this.heatManager.getHeatLevel(heatData.heatScore);
 		const favorite = heatData.metrics.isFavorite ? '★' : '';
 
-		const message = `📊 ${favorite}"${fileName}"
+		const message = `${favorite}"${fileName}"
 Heat: ${heatData.heatScore.toFixed(1)} (${heatLevel})
 Accessed: ${heatData.metrics.accessCount}x
 Edited: ${heatData.metrics.editCount}x
@@ -531,7 +531,7 @@ Last accessed: ${new Date(heatData.metrics.lastAccessed).toLocaleDateString()}`;
 			[VisualizationMode.ANALYTICAL]: 'Analytical'
 		};
 
-		new Notice(`🎨 Visualization mode: ${modeNames[nextMode]}`);
+		new Notice(`Visualization mode: ${modeNames[nextMode]}`);
 	}
 
 	/**
@@ -545,9 +545,9 @@ Last accessed: ${new Date(heatData.metrics.lastAccessed).toLocaleDateString()}`;
 		await this.saveSettings();
 
 		if (!currentState) {
-			new Notice('✨ Visual effects enabled');
+			new Notice('Visual effects enabled');
 		} else {
-			new Notice('👁️ Visual effects disabled');
+			new Notice('Visual effects disabled');
 		}
 	}
 
