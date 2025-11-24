@@ -88,7 +88,7 @@ export default class EmberPlugin extends Plugin {
 		// 6. ExportImportManager - Export/Import functionality (Phase 3)
 		this.exportImportManager = new ExportImportManager(this, this.settings, this.heatManager);
 		if (this.settings.debugLogging) {
-			console.debug('Ember: Export/Import manager initialized');
+			console.debug('Ember: export/import manager initialized');
 		}
 
 		// 7. PropertyStorageManager - Property storage for Dataview integration (Phase 3)
@@ -147,12 +147,12 @@ export default class EmberPlugin extends Plugin {
 		this.addSettingTab(new EmberSettingTab(this.app, this));
 
 		// 18. Add ribbon icon to open Popular Files view
-		this.addRibbonIcon('flame', 'OpenpPopular files', () => {
+		this.addRibbonIcon('flame', 'Open popular files', () => {
 			void this.activatePopularFilesView();
 		});
 
 		// 19. Add ribbon icon to open Hot Files view
-		this.addRibbonIcon('fire', 'OpenhHot files', () => {
+		this.addRibbonIcon('fire', 'Open hot files', () => {
 			void this.activateHotFilesView();
 		});
 
