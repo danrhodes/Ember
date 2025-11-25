@@ -370,7 +370,7 @@ export class TimelineView extends ItemView {
 		if (this.currentSnapshotIndex > 0) {
 			this.currentSnapshotIndex--;
 			this.updateDisplay();
-			this.loadSnapshot(this.currentSnapshotIndex);
+			void this.loadSnapshot(this.currentSnapshotIndex);
 		}
 	}
 
@@ -381,7 +381,7 @@ export class TimelineView extends ItemView {
 		if (this.currentSnapshotIndex < this.snapshots.length - 1) {
 			this.currentSnapshotIndex++;
 			this.updateDisplay();
-			this.loadSnapshot(this.currentSnapshotIndex);
+			void this.loadSnapshot(this.currentSnapshotIndex);
 		}
 	}
 
@@ -391,7 +391,7 @@ export class TimelineView extends ItemView {
 	private jumpToCurrent(): void {
 		this.currentSnapshotIndex = this.snapshots.length - 1;
 		this.updateDisplay();
-		this.loadSnapshot(this.currentSnapshotIndex);
+		void this.loadSnapshot(this.currentSnapshotIndex);
 	}
 
 	/**

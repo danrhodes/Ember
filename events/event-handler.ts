@@ -282,7 +282,7 @@ export class EventHandler {
 		}
 
 		// Force save
-		this.dataStore.forceSave();
+		void this.dataStore.forceSave();
 	}
 
 	/**

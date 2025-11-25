@@ -126,7 +126,7 @@ export class StatisticsView extends ItemView {
 		const statsGrid = section.createEl('div', { cls: 'ember-stats-grid' });
 
 		// Total files tracked
-		this.createStatCard(statsGrid, 'Total Files', allHeatData.length.toString(), 'file');
+		this.createStatCard(statsGrid, 'Total files', allHeatData.length.toString(), 'file');
 
 		// Average heat score
 		const avgHeat = allHeatData.length > 0

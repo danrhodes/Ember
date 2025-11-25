@@ -36,7 +36,7 @@ export class HotFilesView extends ItemView {
 	}
 
 	getDisplayText(): string {
-		return 'Hot Ffiles';
+		return 'Hot files';
 	}
 
 	getIcon(): string {
@@ -373,7 +373,7 @@ export class HotFilesView extends ItemView {
 		// Batch mode toggle
 		const toggleButton = controlsContainer.createEl('button', {
 			cls: `ember-batch-toggle ${this.batchMode ? 'active' : ''}`,
-			text: this.batchMode ? 'Exit Batch Mode' : 'Batch Operations'
+			text: this.batchMode ? 'Exit batch mode' : 'Batch operations'
 		});
 
 		toggleButton.addEventListener('click', () => {
@@ -424,7 +424,7 @@ export class HotFilesView extends ItemView {
 			// Reset heat button
 			const resetBtn = actionsContainer.createEl('button', {
 				cls: 'ember-batch-btn ember-batch-reset',
-				text: `Reset Heat (${this.selectedFiles.size})`
+				text: `Reset heat (${this.selectedFiles.size})`
 			});
 			resetBtn.addEventListener('click', () => this.batchResetHeat(container, timeWindowDays));
 		}

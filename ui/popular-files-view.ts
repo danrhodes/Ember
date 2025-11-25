@@ -316,7 +316,7 @@ export class PopularFilesView extends ItemView {
 		// Filter toggle button
 		const toggleButton = filterContainer.createEl('button', {
 			cls: `ember-filter-toggle ${this.showFilters ? 'active' : ''}`,
-			text: this.showFilters ? 'Hide Filters' : 'Show Filters'
+			text: this.showFilters ? 'Hide filters' : 'Show filters'
 		});
 
 		toggleButton.addEventListener('click', () => {
@@ -337,9 +337,9 @@ export class PopularFilesView extends ItemView {
 		const quickFilters = filterContainer.createEl('div', { cls: 'ember-quick-filters' });
 
 		this.createQuickFilterButton(quickFilters, 'Today', 'today');
-		this.createQuickFilterButton(quickFilters, 'This Week', 'week');
-		this.createQuickFilterButton(quickFilters, 'This Month', 'month');
-		this.createQuickFilterButton(quickFilters, 'Favorites Only', 'favorites');
+		this.createQuickFilterButton(quickFilters, 'This week', 'week');
+		this.createQuickFilterButton(quickFilters, 'This month', 'month');
+		this.createQuickFilterButton(quickFilters, 'Favorites only', 'favorites');
 
 		// Clear all filters button
 		if (activeFilterCount > 0) {

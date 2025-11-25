@@ -79,9 +79,9 @@ export class EmberSettingTab extends PluginSettingTab {
 			.setDesc('Where to store heat data (JSON recommended)')
 			.addDropdown(dropdown => dropdown
 				.addOptions({
-					[StorageMode.JSON_ONLY]: 'JSON Only (Recommended)',
-					[StorageMode.PROPERTY_ONLY]: 'Frontmatter Properties Only',
-					[StorageMode.BOTH]: 'Both JSON and Properties'
+					[StorageMode.JSON_ONLY]: 'JSON only (recommended)',
+					[StorageMode.PROPERTY_ONLY]: 'Frontmatter properties only',
+					[StorageMode.BOTH]: 'Both JSON and properties'
 				})
 				.setValue(this.plugin.settings.storageMode)
 				.onChange((value) => {
@@ -464,9 +464,9 @@ export class EmberSettingTab extends PluginSettingTab {
 			.setDesc('How to display heat visually')
 			.addDropdown(dropdown => dropdown
 				.addOptions({
-					[VisualizationMode.STANDARD]: 'Standard (Hot/Cold)',
-					[VisualizationMode.EMERGENCE]: 'Emergence (Full Gradient)',
-					[VisualizationMode.ANALYTICAL]: 'Analytical (Phase 3)'
+					[VisualizationMode.STANDARD]: 'Standard (hot/cold)',
+					[VisualizationMode.EMERGENCE]: 'Emergence (full gradient)',
+					[VisualizationMode.ANALYTICAL]: 'Analytical (phase 3)'
 				})
 				.setValue(this.plugin.settings.visualizationMode)
 				.onChange((value) => {
@@ -838,10 +838,10 @@ export class EmberSettingTab extends PluginSettingTab {
 			const stats = plugin.archivalManager.getStatistics();
 			const statsGrid = statsDiv.createDiv({ cls: 'ember-stats-grid' });
 
-			this.createStatItem(statsGrid, 'Total Snapshots', stats.totalSnapshots.toString());
-			this.createStatItem(statsGrid, 'Oldest Snapshot', this.formatDate(stats.oldestSnapshot));
-			this.createStatItem(statsGrid, 'Newest Snapshot', this.formatDate(stats.newestSnapshot));
-			this.createStatItem(statsGrid, 'Storage Size', this.formatBytes(stats.totalSize));
+			this.createStatItem(statsGrid, 'Total snapshots', stats.totalSnapshots.toString());
+			this.createStatItem(statsGrid, 'Oldest snapshot', this.formatDate(stats.oldestSnapshot));
+			this.createStatItem(statsGrid, 'Newest snapshot', this.formatDate(stats.newestSnapshot));
+			this.createStatItem(statsGrid, 'Storage size', this.formatBytes(stats.totalSize));
 		} else {
 			statsDiv.createEl('p', {
 				text: 'Archival manager not initialized. Enable the archival system to see statistics.',
@@ -872,9 +872,9 @@ export class EmberSettingTab extends PluginSettingTab {
 	 * Helper: Format bytes to human-readable string
 	 */
 	private formatBytes(bytes: number): string {
-		if (bytes === 0) return '0 Bytes';
+		if (bytes === 0) return '0 bytes';
 		const k = 1024;
-		const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+		const sizes = ['bytes', 'KB', 'MB', 'GB'];
 		const i = Math.floor(Math.log(bytes) / Math.log(k));
 		return Math.round(bytes / Math.pow(k, i) * 100) / 100 + ' ' + sizes[i];
 	}

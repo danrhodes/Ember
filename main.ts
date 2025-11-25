@@ -277,7 +277,7 @@ export default class EmberPlugin extends Plugin {
 
 		// 6. Save final data
 		if (this.dataStore) {
-			this.dataStore.save(true); // Immediate save
+			void this.dataStore.save(true); // Immediate save
 		}
 	}
 
@@ -294,7 +294,7 @@ export default class EmberPlugin extends Plugin {
 		if (this.decayManager) this.decayManager.updateSettings(this.settings);
 		if (this.exclusionManager) this.exclusionManager.updateSettings(this.settings);
 		if (this.dataStore) this.dataStore.updateSettings(this.settings);
-		if (this.archivalManager) this.archivalManager.updateSettings(this.settings);
+		if (this.archivalManager) void this.archivalManager.updateSettings(this.settings);
 		if (this.exportImportManager) this.exportImportManager.updateSettings(this.settings);
 		if (this.propertyStorageManager) this.propertyStorageManager.updateSettings(this.settings);
 		if (this.visualRenderer) this.visualRenderer.updateSettings(this.settings);
@@ -325,7 +325,7 @@ export default class EmberPlugin extends Plugin {
 
 		if (existingLeaves.length > 0) {
 			// View already exists, just reveal it
-			this.app.workspace.revealLeaf(existingLeaves[0]);
+			void this.app.workspace.revealLeaf(existingLeaves[0]);
 			return;
 		}
 
@@ -336,7 +336,7 @@ export default class EmberPlugin extends Plugin {
 				type: POPULAR_FILES_VIEW_TYPE,
 				active: true,
 			});
-			this.app.workspace.revealLeaf(leaf);
+			void this.app.workspace.revealLeaf(leaf);
 		}
 	}
 
@@ -350,7 +350,7 @@ export default class EmberPlugin extends Plugin {
 
 		if (existingLeaves.length > 0) {
 			// View already exists, just reveal it
-			this.app.workspace.revealLeaf(existingLeaves[0]);
+			void this.app.workspace.revealLeaf(existingLeaves[0]);
 			return;
 		}
 
@@ -361,7 +361,7 @@ export default class EmberPlugin extends Plugin {
 				type: HOT_FILES_VIEW_TYPE,
 				active: true,
 			});
-			this.app.workspace.revealLeaf(leaf);
+			void this.app.workspace.revealLeaf(leaf);
 		}
 	}
 
@@ -375,7 +375,7 @@ export default class EmberPlugin extends Plugin {
 
 		if (existingLeaves.length > 0) {
 			// View already exists, just reveal it
-			this.app.workspace.revealLeaf(existingLeaves[0]);
+			void this.app.workspace.revealLeaf(existingLeaves[0]);
 			return;
 		}
 
@@ -386,7 +386,7 @@ export default class EmberPlugin extends Plugin {
 				type: STATISTICS_VIEW_TYPE,
 				active: true,
 			});
-			this.app.workspace.revealLeaf(leaf);
+			void this.app.workspace.revealLeaf(leaf);
 		}
 	}
 
@@ -400,7 +400,7 @@ export default class EmberPlugin extends Plugin {
 
 		if (existingLeaves.length > 0) {
 			// View already exists, just reveal it
-			this.app.workspace.revealLeaf(existingLeaves[0]);
+			void this.app.workspace.revealLeaf(existingLeaves[0]);
 			return;
 		}
 
@@ -411,7 +411,7 @@ export default class EmberPlugin extends Plugin {
 				type: TIMELINE_VIEW_TYPE,
 				active: true,
 			});
-			this.app.workspace.revealLeaf(leaf);
+			void this.app.workspace.revealLeaf(leaf);
 		}
 	}
 
@@ -604,7 +604,7 @@ Last accessed: ${new Date(heatData.metrics.lastAccessed).toLocaleDateString()}`;
 						new Notice(`"${file.basename}" excluded from Ember`);
 					}
 					// Save settings
-					this.saveSettings();
+					void this.saveSettings();
 					// Force visual update
 					if (this.visualRenderer) {
 						this.visualRenderer.forceUpdate();
