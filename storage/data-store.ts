@@ -39,14 +39,14 @@ export class DataStore {
 
 			if (!data || !data.heatData) {
 				if (this.settings.debugLogging) {
-					console.debug('Ember: No existing heat data found, starting fresh');
+					console.debug('Ember: no existing heat data found, starting fresh');
 				}
 				return false;
 			}
 
 			// Validate data structure
 			if (!this.validateData(data.heatData)) {
-				console.error('Ember: Invalid heat data format, starting fresh');
+				console.error('Ember: invalid heat data format, starting fresh');
 				// Create backup of corrupted data for debugging
 				await this.createCorruptedDataBackup(data);
 				return false;
@@ -64,13 +64,13 @@ export class DataStore {
 			this.heatManager.loadData(heatMap);
 
 			if (this.settings.debugLogging) {
-				console.debug(`Ember: Loaded ${heatMap.size} files from storage`);
+				console.debug(`Ember: loaded ${heatMap.size} files from storage`);
 			}
 			return true;
 
 		} catch (error) {
-			console.error('Ember: Error loading heat data:', error);
-			new Notice('Ember: Error loading heat data');
+			console.error('Ember: error loading heat data:', error);
+			new Notice('Ember: error loading heat data');
 			return false;
 		}
 	}
@@ -128,12 +128,12 @@ export class DataStore {
 
 			this.isDirty = false;
 			if (this.settings.debugLogging) {
-				console.debug(`Ember: Saved ${heatMap.size} files to storage`);
+				console.debug(`Ember: saved ${heatMap.size} files to storage`);
 			}
 
 		} catch (error) {
-			console.error('Ember: Error saving heat data:', error);
-			new Notice('Ember: Error saving heat data');
+			console.error('Ember: error saving heat data:', error);
+			new Notice('Ember: error saving heat data');
 		}
 	}
 
@@ -180,7 +180,7 @@ export class DataStore {
 			await this.cleanupOldBackups(backupDir);
 
 		} catch (error) {
-			console.error('Ember: Error creating backup:', error);
+			console.error('Ember: error creating backup:', error);
 			// Don't throw - backups shouldn't block saves
 		}
 	}
@@ -208,7 +208,7 @@ export class DataStore {
 			}
 
 		} catch (error) {
-			console.error('Ember: Error cleaning up backups:', error);
+			console.error('Ember: error cleaning up backups:', error);
 		}
 	}
 
@@ -229,10 +229,10 @@ export class DataStore {
 			);
 
 			if (this.settings.debugLogging) {
-				console.debug(`Ember: Corrupted data backed up to ${backupPath}`);
+				console.debug(`Ember: corrupted data backed up to ${backupPath}`);
 			}
 		} catch (error) {
-			console.error('Ember: Error backing up corrupted data:', error);
+			console.error('Ember: error backing up corrupted data:', error);
 		}
 	}
 
@@ -310,7 +310,7 @@ export class DataStore {
 			const data = JSON.parse(jsonData);
 
 			if (!this.validateData(data)) {
-				new Notice('Ember: Invalid import data format');
+				new Notice('Ember: invalid import data format');
 				return false;
 			}
 
@@ -329,12 +329,12 @@ export class DataStore {
 			// Save immediately
 			await this.save(true);
 
-			new Notice(`Ember: Imported ${heatMap.size} files`);
+			new Notice(`Ember: imported ${heatMap.size} files`);
 			return true;
 
 		} catch (error) {
-			console.error('Ember: Error importing data:', error);
-			new Notice('Ember: Error importing data');
+			console.error('Ember: error importing data:', error);
+			new Notice('Ember: error importing data');
 			return false;
 		}
 	}
@@ -363,7 +363,7 @@ export class DataStore {
 		// Save immediately
 		await this.save(true);
 
-		new Notice('Ember: All heat data cleared');
+		new Notice('Ember: all heat data cleared');
 	}
 
 	/**

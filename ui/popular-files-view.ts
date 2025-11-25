@@ -54,7 +54,7 @@ export class PopularFilesView extends ItemView {
 	}
 
 	getDisplayText(): string {
-		return 'Popular Files';
+		return 'Popular files';
 	}
 
 	getIcon(): string {
@@ -386,7 +386,7 @@ export class PopularFilesView extends ItemView {
 
 		// Folder filter
 		const folderGroup = panel.createEl('div', { cls: 'ember-filter-group' });
-		folderGroup.createEl('label', { text: 'Folder Path:', cls: 'ember-filter-label' });
+		folderGroup.createEl('label', { text: 'Folder path:', cls: 'ember-filter-label' });
 		const folderInput = folderGroup.createEl('input', {
 			type: 'text',
 			cls: 'ember-filter-input',
@@ -400,7 +400,7 @@ export class PopularFilesView extends ItemView {
 
 		// Heat range filter
 		const heatGroup = panel.createEl('div', { cls: 'ember-filter-group' });
-		heatGroup.createEl('label', { text: 'Heat Range:', cls: 'ember-filter-label' });
+		heatGroup.createEl('label', { text: 'Heat range:', cls: 'ember-filter-label' });
 		const heatRangeContainer = heatGroup.createEl('div', { cls: 'ember-filter-range' });
 
 		const minInput = heatRangeContainer.createEl('input', {
@@ -433,7 +433,7 @@ export class PopularFilesView extends ItemView {
 
 		// Date range filter
 		const dateGroup = panel.createEl('div', { cls: 'ember-filter-group' });
-		dateGroup.createEl('label', { text: 'Date Range:', cls: 'ember-filter-label' });
+		dateGroup.createEl('label', { text: 'Date range:', cls: 'ember-filter-label' });
 		const dateSelect = dateGroup.createEl('select', {
 			cls: 'ember-filter-select',
 			value: this.filterState.dateRange
@@ -534,7 +534,7 @@ export class PopularFilesView extends ItemView {
 		// Batch mode toggle
 		const toggleButton = controlsContainer.createEl('button', {
 			cls: `ember-batch-toggle ${this.batchMode ? 'active' : ''}`,
-			text: this.batchMode ? 'Exit Batch Mode' : 'Batch Operations'
+			text: this.batchMode ? 'Exit batch mode' : 'Batch operations'
 		});
 
 		toggleButton.addEventListener('click', () => {
@@ -571,21 +571,21 @@ export class PopularFilesView extends ItemView {
 			// Favorite selected button
 			const favoriteBtn = actionsContainer.createEl('button', {
 				cls: 'ember-batch-btn ember-batch-favorite',
-				text: `★ Favorite (${this.selectedFiles.size})`
+				text: `Favorite (${this.selectedFiles.size})`
 			});
 			favoriteBtn.addEventListener('click', () => this.batchFavorite(container, true));
 
 			// Unfavorite selected button
 			const unfavoriteBtn = actionsContainer.createEl('button', {
 				cls: 'ember-batch-btn ember-batch-unfavorite',
-				text: `☆ Unfavorite (${this.selectedFiles.size})`
+				text: `Unfavorite (${this.selectedFiles.size})`
 			});
 			unfavoriteBtn.addEventListener('click', () => this.batchFavorite(container, false));
 
 			// Reset heat button
 			const resetBtn = actionsContainer.createEl('button', {
 				cls: 'ember-batch-btn ember-batch-reset',
-				text: `Reset Heat (${this.selectedFiles.size})`
+				text: `Reset heat (${this.selectedFiles.size})`
 			});
 			resetBtn.addEventListener('click', () => this.batchResetHeat(container));
 		}

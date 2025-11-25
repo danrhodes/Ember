@@ -49,7 +49,7 @@ export class TimelineView extends ItemView {
 	}
 
 	getDisplayText(): string {
-		return 'Heat Timeline';
+		return 'Heat timeline';
 	}
 
 	getIcon(): string {
@@ -106,7 +106,7 @@ export class TimelineView extends ItemView {
 		});
 
 		if (this.settings.debugLogging) {
-			console.debug('Ember Timeline: Loaded', this.snapshots.length, 'snapshots');
+			console.debug('Ember timeline: loaded', this.snapshots.length, 'snapshots');
 		}
 	}
 
@@ -139,7 +139,7 @@ export class TimelineView extends ItemView {
 
 		this.historyIndicator = header.createEl('div', { cls: 'ember-history-indicator' });
 		this.historyIndicator.setCssStyles({ display: 'none' });
-		this.historyIndicator.createEl('span', { text: '📍 Viewing History' });
+		this.historyIndicator.createEl('span', { text: '📍 Viewing history' });
 
 		const subtitle = header.createEl('div', { cls: 'ember-panel-subtitle' });
 		this.snapshotCount = subtitle.createEl('span', {
@@ -244,7 +244,7 @@ export class TimelineView extends ItemView {
 		returnBtn.addEventListener('click', () => void this.returnToCurrent());
 
 		const exportBtn = actionsContainer.createEl('button', { text: 'Export this snapshot' });
-		exportBtn.title = 'Export this snapshot using Settings → Ember → Export/Import';
+		exportBtn.title = 'Export this snapshot using settings → Ember → export/import';
 		exportBtn.setAttribute('aria-label', 'Export current snapshot');
 		exportBtn.addEventListener('click', () => this.exportCurrentSnapshot());
 
@@ -298,7 +298,7 @@ export class TimelineView extends ItemView {
 		try {
 			// Load historical snapshot
 			if (this.settings.debugLogging) {
-				console.debug('Ember Timeline: Loading snapshot from', snapshot.date);
+				console.debug('Ember Timeline: loading snapshot from', snapshot.date);
 			}
 
 			const success = await this.archivalManager.loadSnapshot(snapshot.timestamp);
@@ -310,7 +310,7 @@ export class TimelineView extends ItemView {
 				// User feedback
 				new Notice(`📸 Loaded snapshot from ${this.formatDate(snapshot.timestamp)}`);
 				if (this.settings.debugLogging) {
-					console.debug('Ember Timeline: Loaded historical snapshot, visuals will update shortly');
+					console.debug('Ember Timeline: loaded historical snapshot, visuals will update shortly');
 				}
 			} else {
 				new Notice('❌ Failed to load snapshot - please try again', 5000);
@@ -341,10 +341,10 @@ export class TimelineView extends ItemView {
 		const hotFiles = currentData.filter(d => d.heatScore > 70).length;
 
 		// Display stats
-		this.createStatCard(statsGrid, 'Total Files', String(totalFiles), 'file-text');
-		this.createStatCard(statsGrid, 'Average Heat', avgHeat.toFixed(1), 'thermometer');
-		this.createStatCard(statsGrid, 'Hot Files', String(hotFiles), 'flame');
-		this.createStatCard(statsGrid, 'Snapshot Date', this.formatDate(historicalTimestamp), 'calendar');
+		this.createStatCard(statsGrid, 'Total files', String(totalFiles), 'file-text');
+		this.createStatCard(statsGrid, 'Average heat', avgHeat.toFixed(1), 'thermometer');
+		this.createStatCard(statsGrid, 'Hot files', String(hotFiles), 'flame');
+		this.createStatCard(statsGrid, 'Snapshot date', this.formatDate(historicalTimestamp), 'calendar');
 	}
 
 	/**
@@ -404,7 +404,7 @@ export class TimelineView extends ItemView {
 
 		try {
 			if (this.settings.debugLogging) {
-				console.debug('Ember Timeline: Returning to current state');
+				console.debug('Ember timeline: returning to current state');
 			}
 
 			// Reload current data from storage
@@ -417,7 +417,7 @@ export class TimelineView extends ItemView {
 			// User feedback
 			new Notice('✅ Returned to current state');
 			if (this.settings.debugLogging) {
-				console.debug('Ember Timeline: Returned to current state, visuals will update shortly');
+				console.debug('Ember timeline: returned to current state, visuals will update shortly');
 			}
 		} finally {
 			this.hideLoading();
@@ -433,7 +433,7 @@ export class TimelineView extends ItemView {
 		}
 
 		// Note: Users can export via Settings → Ember → Export/Import
-		new Notice('Use Export/Import in settings to export heat data');
+		new Notice('Use export/import in settings to export heat data');
 	}
 
 	/**

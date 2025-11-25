@@ -32,7 +32,7 @@ export class StatisticsView extends ItemView {
 	}
 
 	getDisplayText(): string {
-		return 'Ember Statistics';
+		return 'Ember statistics';
 	}
 
 	getIcon(): string {
@@ -81,7 +81,7 @@ export class StatisticsView extends ItemView {
 		// Empty state
 		if (allHeatData.length === 0) {
 			const emptyState = container.createEl('div', { cls: 'ember-empty-state' });
-			emptyState.createEl('h3', { text: '📊 No statistics yet' });
+			emptyState.createEl('h3', { text: 'No statistics yet' });
 			emptyState.createEl('p', { text: 'Heat data will appear as you use your vault.' });
 			const tipsList = emptyState.createEl('ul', { cls: 'ember-empty-tips' });
 			tipsList.createEl('li', { text: 'Open and edit files to generate heat' });
@@ -113,7 +113,7 @@ export class StatisticsView extends ItemView {
 
 		// Footer
 		const footer = container.createEl('div', { cls: 'ember-panel-footer' });
-		footer.createEl('small', { text: 'Ember - Dynamic Heat Tracking' });
+		footer.createEl('small', { text: 'Ember - dynamic heat tracking' });
 	}
 
 	/**
@@ -132,13 +132,13 @@ export class StatisticsView extends ItemView {
 		const avgHeat = allHeatData.length > 0
 			? (allHeatData.reduce((sum, d) => sum + d.heatScore, 0) / allHeatData.length).toFixed(1)
 			: '0';
-		this.createStatCard(statsGrid, 'Average Heat', avgHeat, 'thermometer');
+		this.createStatCard(statsGrid, 'Average heat', avgHeat, 'thermometer');
 
 		// Hottest file
 		const hottestFile = allHeatData.length > 0
 			? Math.max(...allHeatData.map(d => d.heatScore)).toFixed(1)
 			: '0';
-		this.createStatCard(statsGrid, 'Hottest File', hottestFile, 'flame');
+		this.createStatCard(statsGrid, 'Hottest file', hottestFile, 'flame');
 
 		// Favorites count
 		const favoritesCount = allHeatData.filter(d => d.metrics.isFavorite).length;
@@ -227,9 +227,9 @@ export class StatisticsView extends ItemView {
 			}
 		});
 
-		this.createStatCard(statsGrid, 'Heating Up', heatingUp.toString(), 'trending-up', '#f59e0b');
+		this.createStatCard(statsGrid, 'Heating up', heatingUp.toString(), 'trending-up', '#f59e0b');
 		this.createStatCard(statsGrid, 'Stable', stable.toString(), 'minus', '#64748b');
-		this.createStatCard(statsGrid, 'Cooling Down', cooling.toString(), 'trending-down', '#60a5fa');
+		this.createStatCard(statsGrid, 'Cooling down', cooling.toString(), 'trending-down', '#60a5fa');
 	}
 
 	/**
@@ -283,7 +283,7 @@ export class StatisticsView extends ItemView {
 				cls: 'ember-folder-name'
 			});
 			folderInfo.createEl('div', {
-				text: `${item.count} files • Avg heat: ${item.avgHeat.toFixed(1)}`,
+				text: `${item.count} files • avg heat: ${item.avgHeat.toFixed(1)}`,
 				cls: 'ember-folder-stats'
 			});
 
@@ -316,8 +316,8 @@ export class StatisticsView extends ItemView {
 		const statsGrid = section.createEl('div', { cls: 'ember-stats-grid' });
 
 		this.createStatCard(statsGrid, 'Today', today.toString(), 'calendar-clock');
-		this.createStatCard(statsGrid, 'This Week', thisWeek.toString(), 'calendar-days');
-		this.createStatCard(statsGrid, 'This Month', thisMonth.toString(), 'calendar');
+		this.createStatCard(statsGrid, 'This week', thisWeek.toString(), 'calendar-days');
+		this.createStatCard(statsGrid, 'This month', thisMonth.toString(), 'calendar');
 	}
 
 	/**

@@ -36,7 +36,7 @@ export class HotFilesView extends ItemView {
 	}
 
 	getDisplayText(): string {
-		return 'Hot Files';
+		return 'Hot Ffiles';
 	}
 
 	getIcon(): string {

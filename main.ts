@@ -450,9 +450,9 @@ export default class EmberPlugin extends Plugin {
 		// Show notification
 		const fileName = file.basename;
 		if (!isFavorite) {
-			new Notice(`★ "${fileName}" marked as favorite`);
+			new Notice(`"${fileName}" marked as favorite`);
 		} else {
-			new Notice(`☆ "${fileName}" removed from favorites`);
+			new Notice(`"${fileName}" removed from favorites`);
 		}
 	}
 

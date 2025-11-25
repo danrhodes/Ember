@@ -35,7 +35,7 @@ export class StatusBarWidget {
 		this.statusBarItem.addEventListener('click', () => this.onStatusBarClick());
 
 		// Set initial text
-		this.statusBarItem.setText('Ember: No file');
+		this.statusBarItem.setText('Ember: no file');
 	}
 
 	/**
@@ -79,7 +79,7 @@ export class StatusBarWidget {
 		const activeFile = this.plugin.app.workspace.getActiveFile();
 
 		if (!activeFile) {
-			this.statusBarItem.setText('Ember: No file');
+			this.statusBarItem.setText('Ember: no file');
 			this.currentFile = null;
 			return;
 		}
@@ -94,7 +94,7 @@ export class StatusBarWidget {
 		const heatData = this.heatManager.getHeatData(activeFile.path);
 
 		if (!heatData) {
-			this.statusBarItem.setText('Ember: Not tracked');
+			this.statusBarItem.setText('Ember: not tracked');
 			return;
 		}
 
@@ -230,10 +230,10 @@ export class StatusBarWidget {
 		const heatLevel = this.heatManager.getHeatLevel(heatData.heatScore);
 
 		const info = [
-			`Heat Score: ${Math.round(heatData.heatScore)} (${heatLevel})`,
-			`Access Count: ${heatData.metrics.accessCount}`,
-			`Last Accessed: ${this.formatTime(heatData.metrics.lastAccessed)}`,
-			`Last Edited: ${heatData.metrics.lastEdited ? this.formatTime(heatData.metrics.lastEdited) : 'Never'}`,
+			`Heat score: ${Math.round(heatData.heatScore)} (${heatLevel})`,
+			`Access xount: ${heatData.metrics.accessCount}`,
+			`Last accessed: ${this.formatTime(heatData.metrics.lastAccessed)}`,
+			`Last edited: ${heatData.metrics.lastEdited ? this.formatTime(heatData.metrics.lastEdited) : 'Never'}`,
 			`Succession: ${heatData.metrics.successionCount}`,
 			`Favorite: ${heatData.metrics.isFavorite ? 'Yes ★' : 'No'}`
 		].join('\n');

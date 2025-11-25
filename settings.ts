@@ -121,11 +121,11 @@ export class EmberSettingTab extends PluginSettingTab {
 	 */
 	private addPropertyStorageSettings(containerEl: HTMLElement): void {
 		new Setting(containerEl)
-			.setName('Property storage & Dataview integration')
+			.setName('Property storage & dataview integration')
 			.setHeading();
 
 		containerEl.createEl('p', {
-			text: 'Store heat data in frontmatter properties for Dataview queries. Manage migration and sync between JSON and properties.',
+			text: 'Store heat data in frontmatter properties for dataview queries. Manage migration and sync between JSON and properties.',
 			cls: 'setting-item-description'
 		});
 
@@ -138,7 +138,7 @@ export class EmberSettingTab extends PluginSettingTab {
 			.setName('Migrate to properties')
 			.setDesc('Write all heat data to frontmatter properties')
 			.addButton(button => button
-				.setButtonText('Migrate All')
+				.setButtonText('Migrate all')
 				.setIcon('database')
 				.onClick(() => {
 					const propManager = this.plugin.getPropertyStorageManager();
@@ -152,7 +152,7 @@ export class EmberSettingTab extends PluginSettingTab {
 			.setName('Remove all properties')
 			.setDesc('Remove heat properties from all files (keeps JSON data)')
 			.addButton(button => button
-				.setButtonText('Remove All')
+				.setButtonText('Remove all')
 				.setIcon('trash')
 				.setWarning()
 				.onClick(() => {
@@ -179,9 +179,9 @@ export class EmberSettingTab extends PluginSettingTab {
 			.setName('Conflict strategy')
 			.setDesc('How to resolve conflicts between JSON and properties')
 			.addDropdown(dropdown => dropdown
-				.addOption('json-wins', 'JSON Wins (trust JSON data)')
-				.addOption('property-wins', 'Property Wins (trust properties)')
-				.addOption('higher-wins', 'Higher Wins (use max value)')
+				.addOption('json-wins', 'JSON wins (trust JSON data)')
+				.addOption('property-wins', 'Property wins (trust properties)')
+				.addOption('higher-wins', 'Higher wins (use max value)')
 				.setValue(conflictStrategy)
 				.onChange((value: 'json-wins' | 'property-wins' | 'higher-wins') => {
 					conflictStrategy = value;
@@ -210,7 +210,7 @@ export class EmberSettingTab extends PluginSettingTab {
 
 		const examplesDiv = containerEl.createDiv({ cls: 'ember-dataview-examples' });
 		examplesDiv.createEl('p', {
-			text: 'Once properties are enabled, you can query heat data with Dataview:',
+			text: 'Once properties are enabled, you can query heat data with dataview:',
 			cls: 'setting-item-description'
 		});
 
@@ -607,15 +607,15 @@ export class EmberSettingTab extends PluginSettingTab {
 			.setName('Add new exclusion')
 			.setDesc('Add a new exclusion rule')
 			.addButton(button => button
-				.setButtonText('Add Path')
+				.setButtonText('Add path')
 				.onClick(() => this.addNewExclusion(containerEl, 'path'))
 			)
 			.addButton(button => button
-				.setButtonText('Add Glob')
+				.setButtonText('Add glob')
 				.onClick(() => this.addNewExclusion(containerEl, 'glob'))
 			)
 			.addButton(button => button
-				.setButtonText('Add Tag')
+				.setButtonText('Add tag')
 				.onClick(() => this.addNewExclusion(containerEl, 'tag'))
 			);
 	}
@@ -713,7 +713,7 @@ export class EmberSettingTab extends PluginSettingTab {
 
 		new Setting(containerEl)
 			.setName('Popular files count')
-			.setDesc('Number of files to show in Popular Files panel')
+			.setDesc('Number of files to show in popular Files panel')
 			.addSlider(slider => slider
 				.setLimits(5, 50, 5)
 				.setValue(this.plugin.settings.popularFilesCount)
@@ -1033,7 +1033,7 @@ export class EmberSettingTab extends PluginSettingTab {
 				.setWarning()
 				.onClick(() => {
 					// TODO: Implement reset functionality
-					new Notice('Reset functionality will be added in Phase 1.13');
+					new Notice('Reset functionality will be added in phase 1.13');
 				})
 			);
 	}
