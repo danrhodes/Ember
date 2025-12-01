@@ -69,9 +69,9 @@ export class PopularFilesView extends ItemView {
 		// Render initial content
 		this.renderContent();
 
-		// Set up auto-refresh
+		// Set up auto-refresh - only refresh file list to avoid interrupting user input
 		this.refreshInterval = window.setInterval(() => {
-			this.renderContent();
+			this.refreshFileListOnly();
 		}, this.REFRESH_INTERVAL_MS);
 	}
 
@@ -651,6 +651,16 @@ export class PopularFilesView extends ItemView {
 		this.selectedFiles.clear();
 		this.renderBatchControls(container);
 		this.renderFileList(container);
+	}
+
+	/**
+	 * Refresh only the file list without rebuilding search input (prevents interrupting typing)
+	 */
+	private refreshFileListOnly(): void {
+		const container = this.containerEl.children[1] as HTMLElement;
+		if (container) {
+			this.renderFileList(container);
+		}
 	}
 
 	/**

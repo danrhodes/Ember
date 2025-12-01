@@ -152,6 +152,7 @@ export interface EmberSettings {
 	storageMode: StorageMode;
 	propertyName: string;            // Property name for frontmatter (default: 'ember-heat')
 	backupCount: number;             // Number of backups to keep (default: 3)
+	conflictStrategy: 'json-wins' | 'property-wins' | 'higher-wins'; // Conflict resolution strategy (default: 'json-wins')
 	retentionPolicy: RetentionPolicy;
 
 	// Heat Calculation Weights (should sum to 100)
@@ -203,6 +204,10 @@ export interface EmberSettings {
 	// UI Settings
 	showStatusBar: boolean;       // Default: true
 	showRibbonIcon: boolean;      // Default: true
+	showHeatInEditor: boolean;    // Show heat banner under file title (default: false)
+	useHeatIcons: boolean;        // Show heat icons next to file names (default: true)
+	colorTextWithIcons: boolean;  // Also color text when using icons (default: true)
+	useFlameEffect: boolean;      // Show animated flames for 100 heat files (default: true)
 	popularFilesCount: number;    // Default: 20
 	hotFilesTimeWindow: number;   // Days (default: 7)
 	enableContextMenus: boolean;  // Default: true
@@ -229,6 +234,7 @@ export const DEFAULT_SETTINGS: EmberSettings = {
 	storageMode: StorageMode.JSON_ONLY,
 	propertyName: 'ember-heat',
 	backupCount: 3,
+	conflictStrategy: 'json-wins',
 	retentionPolicy: {
 		retentionYears: 5,
 		archiveAfterMonths: 12,
@@ -317,6 +323,10 @@ export const DEFAULT_SETTINGS: EmberSettings = {
 	// UI Settings
 	showStatusBar: true,
 	showRibbonIcon: true,
+	showHeatInEditor: false,
+	useHeatIcons: true,
+	colorTextWithIcons: true,
+	useFlameEffect: true,
 	popularFilesCount: 20,
 	hotFilesTimeWindow: 7,
 	enableContextMenus: true,

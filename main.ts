@@ -1,4 +1,4 @@
-import { Plugin, TFile, Menu, Notice } from 'obsidian';
+import { Plugin, TFile, Menu, Notice, MarkdownView } from 'obsidian';
 import { EmberSettings, DEFAULT_SETTINGS, VisualizationMode } from './types';
 import { HeatManager } from './managers/heat-manager';
 import { MetricsManager } from './managers/metrics-manager';
@@ -11,6 +11,7 @@ import { PropertyStorageManager } from './storage/property-storage-manager';
 import { VisualRenderer } from './visualization/visual-renderer';
 import { EventHandler } from './events/event-handler';
 import { StatusBarWidget } from './ui/status-bar';
+import { EditorHeatBanner } from './ui/editor-heat-banner';
 import { PopularFilesView, POPULAR_FILES_VIEW_TYPE } from './ui/popular-files-view';
 import { HotFilesView, HOT_FILES_VIEW_TYPE } from './ui/hot-files-view';
 import { StatisticsView, STATISTICS_VIEW_TYPE } from './ui/statistics-view';
@@ -48,6 +49,7 @@ export default class EmberPlugin extends Plugin {
 
 	// UI Components
 	private statusBarWidget: StatusBarWidget;
+	private editorHeatBanner: EditorHeatBanner;
 
 	async onload() {
 		// Load settings
@@ -118,6 +120,10 @@ export default class EmberPlugin extends Plugin {
 		// 11. StatusBarWidget - Add to status bar
 		this.statusBarWidget = new StatusBarWidget(this, this.settings, this.heatManager);
 		this.statusBarWidget.start();
+
+		// 11a. EditorHeatBanner - Heat banner in editor
+		this.editorHeatBanner = new EditorHeatBanner(this.settings, this.heatManager);
+		this.registerEditorHeatBanners();
 
 		// 12. Register Popular Files View
 		this.registerView(
@@ -258,6 +264,11 @@ export default class EmberPlugin extends Plugin {
 			this.statusBarWidget.stop();
 		}
 
+		// 1a. Clean up editor heat banners
+		if (this.editorHeatBanner) {
+			this.editorHeatBanner.cleanup();
+		}
+
 		// 2. Event handlers are auto-cleaned by Obsidian's registerEvent()
 
 		// 3. Stop visual renderer
@@ -299,6 +310,10 @@ export default class EmberPlugin extends Plugin {
 		if (this.propertyStorageManager) this.propertyStorageManager.updateSettings(this.settings);
 		if (this.visualRenderer) this.visualRenderer.updateSettings(this.settings);
 		if (this.statusBarWidget) this.statusBarWidget.updateSettings(this.settings);
+		if (this.editorHeatBanner) {
+			this.editorHeatBanner.updateSettings(this.settings);
+			this.refreshEditorBanners();
+		}
 
 		// Update all view instances
 		this.app.workspace.getLeavesOfType(POPULAR_FILES_VIEW_TYPE).forEach(leaf => {
@@ -629,5 +644,48 @@ Last accessed: ${new Date(heatData.metrics.lastAccessed).toLocaleDateString()}`;
 					});
 			});
 		}
+	}
+
+	/**
+	 * Register editor heat banner events
+	 */
+	private registerEditorHeatBanners(): void {
+		// Add banner to currently active editor
+		this.app.workspace.onLayoutReady(() => {
+			this.refreshEditorBanners();
+		});
+
+		// Listen for active leaf changes
+		this.registerEvent(
+			this.app.workspace.on('active-leaf-change', (leaf) => {
+				if (leaf?.view instanceof MarkdownView) {
+					this.editorHeatBanner.addBanner(leaf.view);
+				}
+			})
+		);
+
+		// Listen for file open events
+		this.registerEvent(
+			this.app.workspace.on('file-open', (file) => {
+				if (file) {
+					const activeView = this.app.workspace.getActiveViewOfType(MarkdownView);
+					if (activeView) {
+						this.editorHeatBanner.addBanner(activeView);
+					}
+				}
+			})
+		);
+	}
+
+	/**
+	 * Refresh all editor banners
+	 */
+	private refreshEditorBanners(): void {
+		// Get all markdown views and update their banners
+		this.app.workspace.iterateAllLeaves((leaf) => {
+			if (leaf.view instanceof MarkdownView) {
+				this.editorHeatBanner.addBanner(leaf.view);
+			}
+		});
 	}
 }

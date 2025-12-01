@@ -64,11 +64,27 @@ export class StatisticsView extends ItemView {
 	 */
 	render(): void {
 		const container = this.containerEl.children[1] as HTMLElement;
+
+		if (!container) {
+			console.error('Ember Statistics: Container not found');
+			return;
+		}
+
 		container.empty();
 		container.addClass('ember-statistics-panel');
 
 		// Get all heat data
-		const allHeatData = Array.from(this.heatManager.getAllHeatData().values());
+		let allHeatData: HeatData[] = [];
+
+		try {
+			allHeatData = Array.from(this.heatManager.getAllHeatData().values());
+		} catch (error) {
+			console.error('Ember Statistics: Error getting heat data', error);
+			const errorDiv = container.createDiv({ cls: 'ember-error-state' });
+			errorDiv.createEl('h3', { text: 'Error loading heat data' });
+			errorDiv.createEl('p', { text: 'Please check the console for details.' });
+			return;
+		}
 
 		// Header
 		const header = container.createEl('div', { cls: 'ember-panel-header' });
@@ -90,30 +106,37 @@ export class StatisticsView extends ItemView {
 			return;
 		}
 
-		// Overview Section
-		this.renderOverview(container, allHeatData);
+		try {
+			// Overview Section
+			this.renderOverview(container, allHeatData);
 
-		// Heat Distribution Section
-		this.renderHeatDistribution(container, allHeatData);
+			// Heat Distribution Section
+			this.renderHeatDistribution(container, allHeatData);
 
-		// Activity Trends Section (with line chart)
-		this.renderActivityTrends(container, allHeatData);
+			// Activity Trends Section (with line chart)
+			this.renderActivityTrends(container, allHeatData);
 
-		// Activity Calendar Section (GitHub-style)
-		this.renderActivityCalendar(container, allHeatData);
+			// Activity Calendar Section (GitHub-style)
+			this.renderActivityCalendar(container, allHeatData);
 
-		// Peak Activity Times Section
-		this.renderPeakActivityTimes(container, allHeatData);
+			// Peak Activity Times Section
+			this.renderPeakActivityTimes(container, allHeatData);
 
-		// Top Folders Section
-		this.renderTopFolders(container, allHeatData);
+			// Top Folders Section
+			this.renderTopFolders(container, allHeatData);
 
-		// Session Statistics Section
-		this.renderSessionStats(container, allHeatData);
+			// Session Statistics Section
+			this.renderSessionStats(container, allHeatData);
 
-		// Footer
-		const footer = container.createEl('div', { cls: 'ember-panel-footer' });
-		footer.createEl('small', { text: 'Ember - dynamic heat tracking' });
+			// Footer
+			const footer = container.createEl('div', { cls: 'ember-panel-footer' });
+			footer.createEl('small', { text: 'Ember - dynamic heat tracking' });
+		} catch (error) {
+			console.error('Ember Statistics: Error rendering sections', error);
+			const errorDiv = container.createDiv({ cls: 'ember-error-state' });
+			errorDiv.createEl('h3', { text: 'Error loading statistics sections' });
+			errorDiv.createEl('p', { text: String(error) });
+		}
 	}
 
 	/**
@@ -337,7 +360,9 @@ export class StatisticsView extends ItemView {
 		}
 
 		const iconEl = card.createEl('div', { cls: 'ember-stat-icon' });
-		const svgEl = iconEl.createSvg('svg', { cls: `svg-icon lucide-${icon}` });
+		const svgEl = iconEl.createSvg('svg');
+		svgEl.addClass('svg-icon');
+		svgEl.addClass(`lucide-${icon}`);
 		const useEl = svgEl.createSvg('use');
 		useEl.setAttr('href', `#lucide-${icon}`);
 

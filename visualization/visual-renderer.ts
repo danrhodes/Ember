@@ -184,13 +184,100 @@ export class VisualRenderer {
 		// Add base ember class
 		element.addClass('ember-file');
 
-		// Apply styling based on visualization mode
-		if (this.settings.visualizationMode === VisualizationMode.STANDARD) {
-			this.applyStandardMode(element, heatScore, hotThreshold, coldThreshold);
-		} else if (this.settings.visualizationMode === VisualizationMode.EMERGENCE) {
-			this.applyEmergenceMode(element, heatScore);
-		} else if (this.settings.visualizationMode === VisualizationMode.ANALYTICAL) {
-			this.applyAnalyticalMode(element, heatScore);
+		// Apply flame effect for max heat files (100)
+		if (this.settings.useFlameEffect && heatScore >= 100) {
+			element.addClass('ember-on-fire');
+		}
+
+		// Apply heat icon if enabled
+		if (this.settings.useHeatIcons) {
+			this.applyHeatIcon(element, heatScore);
+		}
+
+		// Apply text coloring if:
+		// 1. Icons are disabled (traditional colored text mode), OR
+		// 2. Icons are enabled AND colorTextWithIcons is enabled
+		if (!this.settings.useHeatIcons || this.settings.colorTextWithIcons) {
+			// Apply styling based on visualization mode
+			if (this.settings.visualizationMode === VisualizationMode.STANDARD) {
+				this.applyStandardMode(element, heatScore, hotThreshold, coldThreshold);
+			} else if (this.settings.visualizationMode === VisualizationMode.EMERGENCE) {
+				this.applyEmergenceMode(element, heatScore);
+			} else if (this.settings.visualizationMode === VisualizationMode.ANALYTICAL) {
+				this.applyAnalyticalMode(element, heatScore);
+			}
+		}
+	}
+
+	/**
+	 * Apply heat icon to element
+	 */
+	private applyHeatIcon(element: HTMLElement, heatScore: number): void {
+		// Determine heat level and corresponding icon
+		const heatLevel = this.heatManager.getHeatLevel(heatScore);
+		const icon = this.getHeatIconForLevel(heatLevel);
+		const color = this.getHeatColorForLevel(heatLevel);
+
+		// Remove any existing heat icon
+		const existingIcon = element.querySelector('.ember-heat-icon');
+		if (existingIcon) {
+			existingIcon.remove();
+		}
+
+		// Create icon element
+		const iconEl = document.createElement('span');
+		iconEl.addClass('ember-heat-icon');
+		iconEl.textContent = icon;
+		iconEl.style.color = color;
+		iconEl.style.marginRight = '4px';
+		iconEl.setAttribute('title', `Heat: ${Math.round(heatScore)} (${heatLevel})`);
+
+		// Insert icon at the beginning of the tree item
+		const titleEl = element.querySelector('.tree-item-inner, .nav-file-title-content');
+		if (titleEl && titleEl.parentElement) {
+			titleEl.parentElement.insertBefore(iconEl, titleEl);
+		} else {
+			element.insertBefore(iconEl, element.firstChild);
+		}
+	}
+
+	/**
+	 * Get icon emoji for heat level
+	 */
+	private getHeatIconForLevel(heatLevel: string): string {
+		switch (heatLevel) {
+			case 'blazing':
+			case 'critical':
+				return '🔥';
+			case 'hot':
+				return '🔥';
+			case 'warm':
+				return '🌡️';
+			case 'cool':
+				return '❄️';
+			case 'cold':
+			default:
+				return '🧊';
+		}
+	}
+
+	/**
+	 * Get color for heat level
+	 */
+	private getHeatColorForLevel(heatLevel: string): string {
+		switch (heatLevel) {
+			case 'blazing':
+			case 'critical':
+				return '#dc2626'; // Red
+			case 'hot':
+				return '#f59e0b'; // Orange
+			case 'warm':
+				return '#fbbf24'; // Yellow
+			case 'cool':
+				return '#3b82f6'; // Blue
+			case 'cold':
+			default:
+				return '#60a5fa'; // Light blue
 		}
 	}
 
@@ -486,11 +573,18 @@ export class VisualRenderer {
 		element.removeClass('ember-emergence');
 		element.removeClass('ember-analytical');
 		element.removeClass('ember-editor');
+		element.removeClass('ember-on-fire');
 		element.removeAttribute('data-favorite');
 
 		// Remove heat level classes
 		for (const level of Object.values(HeatLevel)) {
 			element.removeClass(`ember-heat-${level}`);
+		}
+
+		// Remove heat icon if present
+		const heatIcon = element.querySelector('.ember-heat-icon');
+		if (heatIcon) {
+			heatIcon.remove();
 		}
 
 		// Remove custom properties

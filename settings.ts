@@ -17,6 +17,7 @@ import { StorageMode, VisualizationMode } from './types';
  */
 export class EmberSettingTab extends PluginSettingTab {
 	plugin: EmberPlugin;
+	private weightSumEl: HTMLElement | null = null;
 
 	constructor(app: App, plugin: EmberPlugin) {
 		super(app, plugin);
@@ -170,8 +171,6 @@ export class EmberSettingTab extends PluginSettingTab {
 			cls: 'setting-item-description'
 		});
 
-		let conflictStrategy: 'json-wins' | 'property-wins' | 'higher-wins' = 'json-wins';
-
 		new Setting(containerEl)
 			.setName('Conflict strategy')
 			.setDesc('How to resolve conflicts between JSON and properties')
@@ -179,9 +178,10 @@ export class EmberSettingTab extends PluginSettingTab {
 				.addOption('json-wins', 'JSON wins (trust JSON data)')
 				.addOption('property-wins', 'Property wins (trust properties)')
 				.addOption('higher-wins', 'Higher wins (use max value)')
-				.setValue(conflictStrategy)
+				.setValue(this.plugin.settings.conflictStrategy)
 				.onChange((value: 'json-wins' | 'property-wins' | 'higher-wins') => {
-					conflictStrategy = value;
+					this.plugin.settings.conflictStrategy = value;
+					void this.plugin.saveSettings();
 				})
 			);
 
@@ -193,7 +193,7 @@ export class EmberSettingTab extends PluginSettingTab {
 				.setIcon('check-circle')
 				.onClick(() => {
 					const propManager = this.plugin.getPropertyStorageManager();
-					void propManager.resolveConflicts(conflictStrategy).then((stats) => {
+					void propManager.resolveConflicts(this.plugin.settings.conflictStrategy).then((stats) => {
 						new Notice(`Ember: ${stats.conflicts} conflicts found, ${stats.resolved} resolved.`);
 						this.display(); // Refresh display
 					});
@@ -241,6 +241,18 @@ export class EmberSettingTab extends PluginSettingTab {
 		containerEl.createEl('p', {
 			text: 'Adjust how much each metric contributes to total heat (should sum to 100)',
 			cls: 'setting-item-description'
+		});
+
+		// Weight sum display - create it BEFORE the sliders so it can be updated
+		this.weightSumEl = containerEl.createEl('div', {
+			cls: 'ember-weight-sum',
+			text: this.getWeightSumText()
+		});
+		this.weightSumEl.setCssProps({
+			padding: '8px',
+			marginBottom: '16px',
+			borderRadius: '4px',
+			backgroundColor: 'var(--background-secondary)'
 		});
 
 		new Setting(containerEl)
@@ -312,18 +324,6 @@ export class EmberSettingTab extends PluginSettingTab {
 					this.updateWeightDisplay();
 				})
 			);
-
-		// Weight sum display
-		const weightSumEl = containerEl.createEl('div', {
-			cls: 'ember-weight-sum',
-			text: this.getWeightSumText()
-		});
-		weightSumEl.setCssProps({
-			padding: '8px',
-			marginBottom: '16px',
-			borderRadius: '4px',
-			backgroundColor: 'var(--background-secondary)'
-		});
 
 		new Setting(containerEl)
 			.setName('Heat increments')
@@ -637,7 +637,7 @@ export class EmberSettingTab extends PluginSettingTab {
 			return;
 		}
 
-		rules.forEach((rule, index) => {
+		rules.forEach((rule) => {
 			new Setting(listContainer)
 				.setName(rule.pattern)
 				.setClass('ember-exclusion-item')
@@ -653,6 +653,9 @@ export class EmberSettingTab extends PluginSettingTab {
 					.setIcon('trash')
 					.setTooltip('Delete')
 					.onClick(() => {
+						// Show immediate feedback
+						new Notice(`Removing ${type} exclusion: ${rule.pattern}`);
+
 						this.plugin.settings.exclusionRules = this.plugin.settings.exclusionRules.filter(r => r !== rule);
 						void this.plugin.saveSettings().then(() => {
 							this.display(); // Refresh settings display
@@ -673,8 +676,9 @@ export class EmberSettingTab extends PluginSettingTab {
 					pattern,
 					enabled: true
 				});
-				void this.plugin.saveSettings();
-				this.display(); // Refresh settings display
+				void this.plugin.saveSettings().then(() => {
+					this.display(); // Refresh settings display after save completes
+				});
 			}
 		});
 		modal.open();
@@ -706,6 +710,50 @@ export class EmberSettingTab extends PluginSettingTab {
 				.setValue(this.plugin.settings.showRibbonIcon)
 				.onChange((value) => {
 					this.plugin.settings.showRibbonIcon = value;
+					void this.plugin.saveSettings();
+				})
+			);
+
+		new Setting(containerEl)
+			.setName('Show heat in editor')
+			.setDesc('Display heat level banner under file title in editor')
+			.addToggle(toggle => toggle
+				.setValue(this.plugin.settings.showHeatInEditor)
+				.onChange((value) => {
+					this.plugin.settings.showHeatInEditor = value;
+					void this.plugin.saveSettings();
+				})
+			);
+
+		new Setting(containerEl)
+			.setName('Use heat icons')
+			.setDesc('Show heat icons next to file names in file explorer')
+			.addToggle(toggle => toggle
+				.setValue(this.plugin.settings.useHeatIcons)
+				.onChange((value) => {
+					this.plugin.settings.useHeatIcons = value;
+					void this.plugin.saveSettings();
+				})
+			);
+
+		new Setting(containerEl)
+			.setName('Color text with icons')
+			.setDesc('Also color file names when using heat icons (works best together)')
+			.addToggle(toggle => toggle
+				.setValue(this.plugin.settings.colorTextWithIcons)
+				.onChange((value) => {
+					this.plugin.settings.colorTextWithIcons = value;
+					void this.plugin.saveSettings();
+				})
+			);
+
+		new Setting(containerEl)
+			.setName('Flame effect for max heat')
+			.setDesc('Show animated flame emoji for files at 100 heat (gimmicky but fun!)')
+			.addToggle(toggle => toggle
+				.setValue(this.plugin.settings.useFlameEffect)
+				.onChange((value) => {
+					this.plugin.settings.useFlameEffect = value;
 					void this.plugin.saveSettings();
 				})
 			);
@@ -1049,9 +1097,8 @@ export class EmberSettingTab extends PluginSettingTab {
 	 * Update the weight sum display
 	 */
 	private updateWeightDisplay(): void {
-		const weightSumEl = this.containerEl.querySelector('.ember-weight-sum');
-		if (weightSumEl) {
-			weightSumEl.textContent = this.getWeightSumText();
+		if (this.weightSumEl) {
+			this.weightSumEl.textContent = this.getWeightSumText();
 		}
 	}
 }
@@ -1079,6 +1126,17 @@ class ExclusionModal extends Modal {
 
 		let inputEl: HTMLInputElement;
 
+		const handleSubmit = () => {
+			const pattern = inputEl.value.trim();
+			if (pattern) {
+				new Notice(`Adding ${this.type} exclusion: ${pattern}`);
+				this.onSubmit(pattern);
+				this.close();
+			} else {
+				new Notice('Please enter a pattern');
+			}
+		};
+
 		new Setting(contentEl)
 			.setName('Pattern')
 			.setDesc(this.getDescription())
@@ -1086,24 +1144,27 @@ class ExclusionModal extends Modal {
 				inputEl = text.inputEl;
 				text
 					.setPlaceholder(this.getPlaceholder())
-					.onChange(value => {
-						// Store value for submit
+					.onChange(() => {
+						// Value stored in inputEl
 					});
+
+				// Support Enter key to submit
+				inputEl.addEventListener('keydown', (e: KeyboardEvent) => {
+					if (e.key === 'Enter') {
+						e.preventDefault();
+						handleSubmit();
+					}
+				});
+
+				// Auto-focus the input
+				setTimeout(() => inputEl.focus(), 50);
 			});
 
 		new Setting(contentEl)
 			.addButton(button => button
 				.setButtonText('Add')
 				.setCta()
-				.onClick(() => {
-					const pattern = inputEl.value.trim();
-					if (pattern) {
-						this.onSubmit(pattern);
-						this.close();
-					} else {
-						new Notice('Please enter a pattern');
-					}
-				})
+				.onClick(handleSubmit)
 			)
 			.addButton(button => button
 				.setButtonText('Cancel')
