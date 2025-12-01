@@ -27,9 +27,6 @@ export class EmberSettingTab extends PluginSettingTab {
 		const { containerEl } = this;
 		containerEl.empty();
 
-		new Setting(containerEl)
-			.setName('General')
-			.setHeading();
 		containerEl.createEl('p', {
 			text: 'Configure heat tracking, visualization, and behavior.',
 			cls: 'setting-item-description'
@@ -321,10 +318,12 @@ export class EmberSettingTab extends PluginSettingTab {
 			cls: 'ember-weight-sum',
 			text: this.getWeightSumText()
 		});
-		weightSumEl.style.padding = '8px';
-		weightSumEl.style.marginBottom = '16px';
-		weightSumEl.style.borderRadius = '4px';
-		weightSumEl.style.backgroundColor = 'var(--background-secondary)';
+		weightSumEl.setCssProps({
+			padding: '8px',
+			marginBottom: '16px',
+			borderRadius: '4px',
+			backgroundColor: 'var(--background-secondary)'
+		});
 
 		new Setting(containerEl)
 			.setName('Heat increments')
@@ -667,14 +666,14 @@ export class EmberSettingTab extends PluginSettingTab {
 	 * Add a new exclusion rule
 	 */
 	private addNewExclusion(containerEl: HTMLElement, type: 'path' | 'glob' | 'tag'): void {
-		const modal = new ExclusionModal(this.app, type, async (pattern: string) => {
+		const modal = new ExclusionModal(this.app, type, (pattern: string) => {
 			if (pattern) {
 				this.plugin.settings.exclusionRules.push({
 					type,
 					pattern,
 					enabled: true
 				});
-				await this.plugin.saveSettings();
+				void this.plugin.saveSettings();
 				this.display(); // Refresh settings display
 			}
 		});
@@ -702,7 +701,7 @@ export class EmberSettingTab extends PluginSettingTab {
 
 		new Setting(containerEl)
 			.setName('Show ribbon icon')
-			.setDesc('Display Ember icon in left ribbon')
+			.setDesc('Display icon in left ribbon')
 			.addToggle(toggle => toggle
 				.setValue(this.plugin.settings.showRibbonIcon)
 				.onChange((value) => {
@@ -713,7 +712,7 @@ export class EmberSettingTab extends PluginSettingTab {
 
 		new Setting(containerEl)
 			.setName('Popular files count')
-			.setDesc('Number of files to show in popular Files panel')
+			.setDesc('Number of files to show in popular files panel')
 			.addSlider(slider => slider
 				.setLimits(5, 50, 5)
 				.setValue(this.plugin.settings.popularFilesCount)
@@ -752,7 +751,7 @@ export class EmberSettingTab extends PluginSettingTab {
 
 		new Setting(containerEl)
 			.setName('Enable context menus')
-			.setDesc('Add Ember actions to right-click menus')
+			.setDesc('Add actions to right-click menus')
 			.addToggle(toggle => toggle
 				.setValue(this.plugin.settings.enableContextMenus)
 				.onChange((value) => {

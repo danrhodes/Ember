@@ -195,10 +195,10 @@ export class ExportImportManager {
 	 * @param strategy - Import strategy
 	 * @returns Statistics about the import
 	 */
-	private async applyImportStrategy(
+	private applyImportStrategy(
 		dataStore: { files: Record<string, HeatData> },
 		strategy: 'replace' | 'merge' | 'skip'
-	): Promise<{ imported: number; skipped: number; updated: number }> {
+	): { imported: number; skipped: number; updated: number } {
 		const stats = { imported: 0, skipped: 0, updated: 0 };
 		const currentData = this.heatManager.getAllHeatData();
 

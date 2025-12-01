@@ -69,11 +69,11 @@ export class StatusBarWidget {
 	 */
 	update(): void {
 		if (!this.settings.showStatusBar) {
-			this.statusBarItem.style.setProperty('display', 'none');
+			this.statusBarItem.setCssProps({ display: 'none' });
 			return;
 		}
 
-		this.statusBarItem.style.setProperty('display', '');
+		this.statusBarItem.setCssProps({ display: '' });
 
 		// Get current file
 		const activeFile = this.plugin.app.workspace.getActiveFile();

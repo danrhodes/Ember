@@ -283,7 +283,7 @@ export class DataStore {
 	 * Export heat data to JSON string
 	 * @returns JSON string of all heat data
 	 */
-	async exportData(): Promise<string> {
+	exportData(): string {
 		const heatMap = this.heatManager.getAllHeatData();
 		const filesObject: Record<string, HeatData> = {};
 

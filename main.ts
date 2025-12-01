@@ -616,7 +616,7 @@ Last accessed: ${new Date(heatData.metrics.lastAccessed).toLocaleDateString()}`;
 		if (heatData) {
 			menu.addItem((item) => {
 				item
-					.setTitle('Reset Ember heat')
+					.setTitle('Reset heat')
 					.setIcon('thermometer')
 					.onClick(() => {
 						this.heatManager.resetFileHeat(file.path);

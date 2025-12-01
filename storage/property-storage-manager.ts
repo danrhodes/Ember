@@ -30,7 +30,7 @@ export class PropertyStorageManager {
 	 * @param file - File to read from
 	 * @returns Heat score or null if not found
 	 */
-	async readFromProperty(file: TFile): Promise<number | null> {
+	readFromProperty(file: TFile): number | null {
 		try {
 			const cache = this.plugin.app.metadataCache.getFileCache(file);
 			if (!cache?.frontmatter) {

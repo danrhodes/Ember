@@ -89,12 +89,12 @@ export class ArchivalManager {
 
 		// Create initial snapshot if none exist
 		if (this.snapshots.length === 0) {
-			this.createSnapshot();
+			void this.createSnapshot();
 		}
 
 		// Schedule periodic snapshots
 		this.snapshotInterval = window.setInterval(() => {
-			this.createSnapshot();
+			void this.createSnapshot();
 		}, intervalMs);
 	}
 
@@ -151,7 +151,7 @@ export class ArchivalManager {
 	/**
 	 * Cleanup old snapshots based on retention settings
 	 */
-	private async cleanupOldSnapshots(): Promise<void> {
+	private cleanupOldSnapshots(): void {
 		const retentionMs = this.settings.archival.retentionDays * 24 * 60 * 60 * 1000;
 		const cutoffTime = Date.now() - retentionMs;
 
@@ -197,7 +197,7 @@ export class ArchivalManager {
 			if (this.settings.debugLogging) {
 				console.debug(`Ember: Loaded ${this.snapshots.length} snapshots`);
 			}
-		} catch (error) {
+		} catch {
 			// File doesn't exist or is corrupted - start fresh
 			this.snapshots = [];
 			if (this.settings.debugLogging) {
@@ -341,7 +341,7 @@ export class ArchivalManager {
 	/**
 	 * Get list of snapshots with metadata (for timeline view)
 	 */
-	async getSnapshotList(): Promise<Array<{ timestamp: number; date: string }>> {
+	getSnapshotList(): Array<{ timestamp: number; date: string }> {
 		return this.snapshots.map(s => ({
 			timestamp: s.timestamp,
 			date: new Date(s.timestamp).toLocaleDateString('en-US', {
@@ -357,7 +357,7 @@ export class ArchivalManager {
 	/**
 	 * Load a snapshot into the HeatManager (for timeline viewing)
 	 */
-	async loadSnapshot(timestamp: number): Promise<boolean> {
+	loadSnapshot(timestamp: number): boolean {
 		const snapshot = this.getSnapshotAt(timestamp);
 		if (!snapshot) {
 			console.error('Ember: Snapshot not found for timestamp', timestamp);
@@ -391,7 +391,7 @@ export class ArchivalManager {
 	/**
 	 * Restore the current state (return from historical viewing)
 	 */
-	async restoreCurrentState(): Promise<void> {
+	restoreCurrentState(): void {
 		if (!this.currentStateBackup) {
 			console.warn('Ember: No backup state to restore');
 			return;

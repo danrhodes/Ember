@@ -244,7 +244,7 @@ export class TimelineView extends ItemView {
 		returnBtn.addEventListener('click', () => void this.returnToCurrent());
 
 		const exportBtn = actionsContainer.createEl('button', { text: 'Export this snapshot' });
-		exportBtn.title = 'Export this snapshot using settings → Ember → export/import';
+		exportBtn.title = 'Export this snapshot using settings → export/import';
 		exportBtn.setAttribute('aria-label', 'Export current snapshot');
 		exportBtn.addEventListener('click', () => this.exportCurrentSnapshot());
 
