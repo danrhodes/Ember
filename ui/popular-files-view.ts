@@ -61,7 +61,7 @@ export class PopularFilesView extends ItemView {
 		return 'flame';
 	}
 
-	async onOpen(): Promise<void> {
+	onOpen(): void {
 		const container = this.containerEl.children[1];
 		container.empty();
 		container.addClass('ember-popular-files-panel');
@@ -75,7 +75,7 @@ export class PopularFilesView extends ItemView {
 		}, this.REFRESH_INTERVAL_MS);
 	}
 
-	async onClose(): Promise<void> {
+	onClose(): void {
 		// Clean up interval
 		if (this.refreshInterval !== null) {
 			window.clearInterval(this.refreshInterval);

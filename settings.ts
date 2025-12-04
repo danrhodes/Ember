@@ -92,7 +92,7 @@ export class EmberSettingTab extends PluginSettingTab {
 			.setName('Property name')
 			.setDesc('Name of frontmatter property (if using property storage)')
 			.addText(text => text
-				.setPlaceholder('ember-heat')
+				.setPlaceholder('Ember-heat')
 				.setValue(this.plugin.settings.propertyName)
 				.onChange((value) => {
 					this.plugin.settings.propertyName = value || 'ember-heat';
@@ -476,7 +476,7 @@ export class EmberSettingTab extends PluginSettingTab {
 			);
 
 		containerEl.createEl('p', {
-			text: 'Minimal mode: ADHD-friendly visualization using only subtle opacity changes (no colors or icons). Hot notes stay at full opacity, cold notes gradually fade.',
+			text: 'Minimal mode: friendly visualization using only subtle opacity changes (no colors or icons). Hot notes stay at full opacity, cold notes gradually fade.',
 			cls: 'setting-item-description'
 		});
 
@@ -1186,7 +1186,7 @@ class ExclusionModal extends Modal {
 				.setName('Select from existing paths')
 				.setDesc('Choose a file or folder from your vault')
 				.addDropdown(dropdown => {
-					dropdown.addOption('', '-- Select a path --');
+					dropdown.addOption('', 'Select a path');
 
 					// Add folders
 					paths.folders.forEach(folder => {
@@ -1257,7 +1257,7 @@ class ExclusionModal extends Modal {
 
 		const allFiles = this.app.vault.getFiles();
 		const allFolders = this.app.vault.getAllLoadedFiles()
-			.filter(f => f instanceof TFolder) as TFolder[];
+			.filter(f => f instanceof TFolder);
 
 		// Get all markdown files
 		allFiles.forEach(file => {

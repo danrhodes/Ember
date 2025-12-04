@@ -62,7 +62,7 @@ export class TimelineView extends ItemView {
 		container.addClass('ember-timeline-container');
 
 		// Load available snapshots
-		await this.loadSnapshots();
+		this.loadSnapshots();
 
 		if (this.snapshots.length === 0) {
 			this.showEmptyState(container);
@@ -89,14 +89,14 @@ export class TimelineView extends ItemView {
 	async onClose(): Promise<void> {
 		// Return to current state if viewing history
 		if (this.isViewingHistory) {
-			await this.returnToCurrent();
+			this.returnToCurrent();
 		}
 	}
 
 	/**
 	 * Load available snapshots
 	 */
-	private async loadSnapshots(): Promise<void> {
+	private loadSnapshots(): void {
 		this.snapshots = this.archivalManager.getSnapshotList();
 
 		// Add "current" as the latest snapshot
@@ -139,7 +139,7 @@ export class TimelineView extends ItemView {
 
 		this.historyIndicator = header.createEl('div', { cls: 'ember-history-indicator' });
 		this.historyIndicator.setCssStyles({ display: 'none' });
-		this.historyIndicator.createEl('span', { text: '📍 Viewing history' });
+		this.historyIndicator.createEl('span', { text: 'Viewing history' });
 
 		const subtitle = header.createEl('div', { cls: 'ember-panel-subtitle' });
 		this.snapshotCount = subtitle.createEl('span', {
@@ -201,7 +201,7 @@ export class TimelineView extends ItemView {
 		// Navigation buttons
 		const navButtons = controlsContainer.createEl('div', { cls: 'ember-timeline-nav' });
 
-		const prevBtn = navButtons.createEl('button', { text: '← Previous' });
+		const prevBtn = navButtons.createEl('button', { text: 'Previous' });
 		prevBtn.title = 'Go to previous snapshot in timeline';
 		prevBtn.setAttribute('aria-label', 'Previous snapshot');
 		prevBtn.addEventListener('click', () => this.navigatePrevious());
@@ -251,7 +251,7 @@ export class TimelineView extends ItemView {
 		// Warning message
 		const warning = actionsContainer.createEl('div', { cls: 'ember-timeline-warning' });
 		warning.createEl('p', {
-			text: '⚠️ When viewing historical data, the visual renderer shows the heat state from that time.'
+			text: 'When viewing historical data, the visual renderer shows the heat state from that time.'
 		});
 	}
 
@@ -288,7 +288,7 @@ export class TimelineView extends ItemView {
 
 		// If current, restore to live data
 		if (snapshot.date === 'Current') {
-			await this.returnToCurrent();
+			this.returnToCurrent();
 			return;
 		}
 
@@ -397,7 +397,7 @@ export class TimelineView extends ItemView {
 	/**
 	 * Return to current state
 	 */
-	private async returnToCurrent(): Promise<void> {
+	private returnToCurrent(): void {
 		if (!this.isViewingHistory) return;
 
 		this.showLoading('Returning to current state...');
@@ -470,7 +470,7 @@ export class TimelineView extends ItemView {
 	 * Refresh view
 	 */
 	async refresh(): Promise<void> {
-		await this.loadSnapshots();
+		this.loadSnapshots();
 		await this.onOpen();
 	}
 

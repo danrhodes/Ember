@@ -120,7 +120,7 @@ export class PropertyStorageManager {
 	 * Used when switching to property storage mode or on conflict resolution
 	 * @returns Map of file paths to heat scores
 	 */
-	async loadAllFromProperties(): Promise<Map<string, number>> {
+	loadAllFromProperties(): Map<string, number> {
 		const heatScores = new Map<string, number>();
 		const markdownFiles = this.plugin.app.vault.getMarkdownFiles();
 
