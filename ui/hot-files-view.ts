@@ -43,7 +43,7 @@ export class HotFilesView extends ItemView {
 		return 'flame';
 	}
 
-	onOpen(): void {
+	async onOpen(): Promise<void> {
 		const container = this.containerEl.children[1];
 		container.empty();
 		container.addClass('ember-hot-files-panel');
@@ -55,14 +55,17 @@ export class HotFilesView extends ItemView {
 		this.refreshInterval = window.setInterval(() => {
 			this.refreshFileListOnly();
 		}, this.REFRESH_INTERVAL_MS);
+
+		return await Promise.resolve();
 	}
 
-	onClose(): void {
+	async onClose(): Promise<void> {
 		// Clean up interval
 		if (this.refreshInterval !== null) {
 			window.clearInterval(this.refreshInterval);
 			this.refreshInterval = null;
 		}
+		return await Promise.resolve();
 	}
 
 	/**

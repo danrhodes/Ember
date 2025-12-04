@@ -39,7 +39,7 @@ export class StatisticsView extends ItemView {
 		return 'bar-chart-2';
 	}
 
-	onOpen(): void {
+	async onOpen(): Promise<void> {
 		const container = this.containerEl.children[1] as HTMLElement;
 		container.empty();
 		container.addClass('ember-statistics-panel');
@@ -50,13 +50,16 @@ export class StatisticsView extends ItemView {
 		this.refreshInterval = window.setInterval(() => {
 			this.render();
 		}, this.REFRESH_INTERVAL_MS);
+
+		return await Promise.resolve();
 	}
 
-	onClose(): void {
+	async onClose(): Promise<void> {
 		if (this.refreshInterval !== null) {
 			window.clearInterval(this.refreshInterval);
 			this.refreshInterval = null;
 		}
+		return await Promise.resolve();
 	}
 
 	/**

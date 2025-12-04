@@ -62,7 +62,7 @@ export class TimelineView extends ItemView {
 		container.addClass('ember-timeline-container');
 
 		// Load available snapshots
-		this.loadSnapshots();
+		await this.loadSnapshots();
 
 		if (this.snapshots.length === 0) {
 			this.showEmptyState(container);
@@ -89,14 +89,14 @@ export class TimelineView extends ItemView {
 	async onClose(): Promise<void> {
 		// Return to current state if viewing history
 		if (this.isViewingHistory) {
-			this.returnToCurrent();
+			await this.returnToCurrent();
 		}
 	}
 
 	/**
 	 * Load available snapshots
 	 */
-	private loadSnapshots(): void {
+	private async loadSnapshots(): Promise<void> {
 		this.snapshots = this.archivalManager.getSnapshotList();
 
 		// Add "current" as the latest snapshot
@@ -108,6 +108,8 @@ export class TimelineView extends ItemView {
 		if (this.settings.debugLogging) {
 			console.debug('Ember timeline: loaded', this.snapshots.length, 'snapshots');
 		}
+
+		return await Promise.resolve();
 	}
 
 	/**
@@ -288,7 +290,7 @@ export class TimelineView extends ItemView {
 
 		// If current, restore to live data
 		if (snapshot.date === 'Current') {
-			this.returnToCurrent();
+			await this.returnToCurrent();
 			return;
 		}
 
@@ -397,8 +399,8 @@ export class TimelineView extends ItemView {
 	/**
 	 * Return to current state
 	 */
-	private returnToCurrent(): void {
-		if (!this.isViewingHistory) return;
+	private async returnToCurrent(): Promise<void> {
+		if (!this.isViewingHistory) return await Promise.resolve();
 
 		this.showLoading('Returning to current state...');
 
@@ -422,6 +424,8 @@ export class TimelineView extends ItemView {
 		} finally {
 			this.hideLoading();
 		}
+
+		return await Promise.resolve();
 	}
 
 	/**
@@ -470,7 +474,7 @@ export class TimelineView extends ItemView {
 	 * Refresh view
 	 */
 	async refresh(): Promise<void> {
-		this.loadSnapshots();
+		await this.loadSnapshots();
 		await this.onOpen();
 	}
 
