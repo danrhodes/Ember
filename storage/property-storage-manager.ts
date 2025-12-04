@@ -125,7 +125,7 @@ export class PropertyStorageManager {
 		const markdownFiles = this.plugin.app.vault.getMarkdownFiles();
 
 		for (const file of markdownFiles) {
-			const heatScore = await this.readFromProperty(file);
+			const heatScore = this.readFromProperty(file);
 			if (heatScore !== null) {
 				heatScores.set(file.path, heatScore);
 			}
@@ -197,7 +197,7 @@ export class PropertyStorageManager {
 		}
 
 		for (const file of markdownFiles) {
-			const hasProperty = await this.readFromProperty(file);
+			const hasProperty = this.readFromProperty(file);
 			if (hasProperty === null) {
 				continue; // No property to remove
 			}
@@ -236,7 +236,7 @@ export class PropertyStorageManager {
 
 		for (const file of markdownFiles) {
 			const jsonHeatData = this.heatManager.getHeatData(file.path);
-			const propertyHeat = await this.readFromProperty(file);
+			const propertyHeat = this.readFromProperty(file);
 
 			// No conflict if only one source has data
 			if (!jsonHeatData && propertyHeat === null) continue;

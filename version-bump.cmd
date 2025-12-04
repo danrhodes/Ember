@@ -93,8 +93,41 @@ if %ERRORLEVEL% EQU 0 (
     echo.
     echo New version: %NEW_VERSION%
     echo.
+
+    REM Create release folder and copy files
+    echo Creating release folder...
+    set RELEASE_DIR=_releases\%NEW_VERSION%
+
+    if not exist "_releases" mkdir "_releases"
+    if not exist "%RELEASE_DIR%" (
+        mkdir "%RELEASE_DIR%"
+        echo Created: %RELEASE_DIR%
+    ) else (
+        echo Folder already exists: %RELEASE_DIR%
+    )
+
+    echo.
+    echo Copying release files...
+
+    REM Create temporary PowerShell script
+    echo $releaseDir = '%RELEASE_DIR%' > _temp_copy.ps1
+    echo if (Test-Path 'main.js') { Copy-Item 'main.js' "$releaseDir\main.js" -Force; Write-Host '  - Copied main.js' } else { Write-Host '  WARNING: main.js not found' } >> _temp_copy.ps1
+    echo if (Test-Path 'manifest.json') { Copy-Item 'manifest.json' "$releaseDir\manifest.json" -Force; Write-Host '  - Copied manifest.json' } else { Write-Host '  WARNING: manifest.json not found' } >> _temp_copy.ps1
+    echo if (Test-Path 'styles.css') { Copy-Item 'styles.css' "$releaseDir\styles.css" -Force; Write-Host '  - Copied styles.css' } else { Write-Host '  WARNING: styles.css not found' } >> _temp_copy.ps1
+
+    REM Execute the script
+    powershell -ExecutionPolicy Bypass -File _temp_copy.ps1
+
+    REM Clean up
+    del _temp_copy.ps1 >nul 2>&1
+
+    echo.
+    echo ========================================
+    echo Release files ready in: %RELEASE_DIR%
+    echo ========================================
+    echo.
     echo Next steps:
-    echo   1. Run 'build-release.cmd' to build
+    echo   1. Run 'build-release.cmd' if not already built
     echo   2. Test the plugin
     echo   3. Run 'release-git.cmd' to publish
     echo.

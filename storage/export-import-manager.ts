@@ -132,7 +132,7 @@ export class ExportImportManager {
 			}
 
 			// Import based on strategy
-			const stats = await this.applyImportStrategy(importData.data, strategy);
+			const stats = this.applyImportStrategy(importData.data, strategy);
 
 			return {
 				success: true,

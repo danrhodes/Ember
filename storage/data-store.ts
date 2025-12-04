@@ -123,8 +123,13 @@ export class DataStore {
 				files: filesObject
 			};
 
-			// Save to file using Obsidian's data API
-			await this.plugin.saveData({ heatData: store });
+			// Load existing data to preserve settings
+			const existingData = await this.plugin.loadData() || {};
+			// Save heatData while preserving settings
+			await this.plugin.saveData({
+				...existingData,
+				heatData: store
+			});
 
 			this.isDirty = false;
 			if (this.settings.debugLogging) {

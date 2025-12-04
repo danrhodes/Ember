@@ -293,11 +293,62 @@ export default class EmberPlugin extends Plugin {
 	}
 
 	async loadSettings() {
-		this.settings = Object.assign({}, DEFAULT_SETTINGS, await this.loadData());
+		const savedData = await this.loadData();
+		// Extract settings from the data object (data.json contains both settings and heatData)
+		const savedSettings = savedData?.settings;
+		this.settings = this.deepMerge(DEFAULT_SETTINGS, savedSettings);
+	}
+
+	/**
+	 * Deep merge settings to properly handle nested objects
+	 * This prevents settings from reverting to defaults when nested properties are missing
+	 */
+	private deepMerge(defaults: EmberSettings, saved: Partial<EmberSettings>): EmberSettings {
+		const result = JSON.parse(JSON.stringify(defaults)) as EmberSettings;
+
+		if (!saved) return result;
+
+		// Recursively merge saved settings into defaults
+		this.mergeDeep(result as unknown as Record<string, unknown>, saved as unknown as Record<string, unknown>);
+
+		return result;
+	}
+
+	/**
+	 * Recursively merge source object into target object
+	 */
+	private mergeDeep(target: Record<string, unknown>, source: Record<string, unknown>): void {
+		for (const key in source) {
+			if (Object.prototype.hasOwnProperty.call(source, key)) {
+				const sourceValue = source[key];
+				const targetValue = target[key];
+
+				// Handle arrays - replace entirely, don't merge
+				if (Array.isArray(sourceValue)) {
+					target[key] = sourceValue;
+				}
+				// Handle objects - recursively merge
+				else if (sourceValue && typeof sourceValue === 'object' &&
+					targetValue && typeof targetValue === 'object' &&
+					!Array.isArray(targetValue)) {
+					this.mergeDeep(targetValue as Record<string, unknown>, sourceValue as Record<string, unknown>);
+				}
+				// Handle primitives and nulls
+				else if (sourceValue !== undefined) {
+					target[key] = sourceValue;
+				}
+			}
+		}
 	}
 
 	async saveSettings() {
-		await this.saveData(this.settings);
+		// Load existing data to preserve heatData
+		const existingData = await this.loadData() || {};
+		// Save settings while preserving heatData
+		await this.saveData({
+			...existingData,
+			settings: this.settings
+		});
 
 		// Notify all components of settings changes
 		if (this.heatManager) this.heatManager.updateSettings(this.settings);
@@ -529,6 +580,7 @@ Last accessed: ${new Date(heatData.metrics.lastAccessed).toLocaleDateString()}`;
 	 */
 	async cycleVisualizationMode(): Promise<void> {
 		const modes: VisualizationMode[] = [
+			VisualizationMode.MINIMAL,
 			VisualizationMode.STANDARD,
 			VisualizationMode.EMERGENCE,
 			VisualizationMode.ANALYTICAL
@@ -541,6 +593,7 @@ Last accessed: ${new Date(heatData.metrics.lastAccessed).toLocaleDateString()}`;
 		await this.saveSettings();
 
 		const modeNames: Record<VisualizationMode, string> = {
+			[VisualizationMode.MINIMAL]: 'Minimal',
 			[VisualizationMode.STANDARD]: 'Standard',
 			[VisualizationMode.EMERGENCE]: 'Emergence',
 			[VisualizationMode.ANALYTICAL]: 'Analytical'
@@ -672,6 +725,16 @@ Last accessed: ${new Date(heatData.metrics.lastAccessed).toLocaleDateString()}`;
 					if (activeView) {
 						this.editorHeatBanner.addBanner(activeView);
 					}
+				}
+			})
+		);
+
+		// Listen for layout changes (e.g., switching between edit and reading mode)
+		this.registerEvent(
+			this.app.workspace.on('layout-change', () => {
+				const activeView = this.app.workspace.getActiveViewOfType(MarkdownView);
+				if (activeView) {
+					this.editorHeatBanner.addBanner(activeView);
 				}
 			})
 		);

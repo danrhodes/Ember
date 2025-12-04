@@ -18,7 +18,8 @@ export enum HeatLevel {
 export enum VisualizationMode {
 	STANDARD = 'standard',      // Hot/cold endpoints, neutral middle
 	EMERGENCE = 'emergence',    // Full gradient across all files
-	ANALYTICAL = 'analytical'   // Multi-dimensional analysis
+	ANALYTICAL = 'analytical',  // Multi-dimensional analysis
+	MINIMAL = 'minimal'         // Accessibility mode: subtle opacity fade, no colors
 }
 
 /**

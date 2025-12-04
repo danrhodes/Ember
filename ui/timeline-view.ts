@@ -97,7 +97,7 @@ export class TimelineView extends ItemView {
 	 * Load available snapshots
 	 */
 	private async loadSnapshots(): Promise<void> {
-		this.snapshots = await this.archivalManager.getSnapshotList();
+		this.snapshots = this.archivalManager.getSnapshotList();
 
 		// Add "current" as the latest snapshot
 		this.snapshots.push({
@@ -301,7 +301,7 @@ export class TimelineView extends ItemView {
 				console.debug('Ember Timeline: loading snapshot from', snapshot.date);
 			}
 
-			const success = await this.archivalManager.loadSnapshot(snapshot.timestamp);
+			const success = this.archivalManager.loadSnapshot(snapshot.timestamp);
 
 			if (success) {
 				this.isViewingHistory = true;
@@ -313,7 +313,7 @@ export class TimelineView extends ItemView {
 					console.debug('Ember Timeline: loaded historical snapshot, visuals will update shortly');
 				}
 			} else {
-				new Notice('❌ Failed to load snapshot - please try again', 5000);
+				new Notice('❌ failed to load snapshot - please try again', 5000);
 				console.error('Failed to load snapshot');
 			}
 		} finally {
@@ -408,14 +408,14 @@ export class TimelineView extends ItemView {
 			}
 
 			// Reload current data from storage
-			await this.archivalManager.restoreCurrentState();
+			this.archivalManager.restoreCurrentState();
 
 			this.isViewingHistory = false;
 			this.currentSnapshotIndex = this.snapshots.length - 1;
 			this.updateDisplay();
 
 			// User feedback
-			new Notice('✅ Returned to current state');
+			new Notice('✅ returned to current state');
 			if (this.settings.debugLogging) {
 				console.debug('Ember timeline: returned to current state, visuals will update shortly');
 			}

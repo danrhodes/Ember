@@ -138,7 +138,7 @@ export class ArchivalManager {
 		this.snapshots.push(snapshot);
 
 		// Cleanup old snapshots
-		await this.cleanupOldSnapshots();
+		this.cleanupOldSnapshots();
 
 		// Save snapshots
 		await this.saveSnapshots();
@@ -442,7 +442,7 @@ export class ArchivalManager {
 		}
 
 		// Cleanup if retention settings changed
-		await this.cleanupOldSnapshots();
+		this.cleanupOldSnapshots();
 		await this.saveSnapshots();
 	}
 

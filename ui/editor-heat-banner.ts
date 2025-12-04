@@ -30,42 +30,42 @@ export class EditorHeatBanner {
 	 * Add or update banner for a specific view
 	 */
 	addBanner(view: MarkdownView): void {
-		console.log('[EditorHeatBanner] addBanner called for view');
+		console.debug('[EditorHeatBanner] addBanner called for view');
 
 		if (!this.settings.showHeatInEditor) {
-			console.log('[EditorHeatBanner] Setting disabled, removing banner');
+			console.debug('[EditorHeatBanner] Setting disabled, removing banner');
 			this.removeBanner(view);
 			return;
 		}
 
 		const file = view.file;
 		if (!file) {
-			console.log('[EditorHeatBanner] No file in view');
+			console.debug('[EditorHeatBanner] No file in view');
 			this.removeBanner(view);
 			return;
 		}
 
-		console.log('[EditorHeatBanner] File path:', file.path);
+		console.debug('[EditorHeatBanner] File path:', file.path);
 
 		const heatData = this.heatManager.getHeatData(file.path);
 		if (!heatData) {
-			console.log('[EditorHeatBanner] No heat data for file');
+			console.debug('[EditorHeatBanner] No heat data for file');
 			this.removeBanner(view);
 			return;
 		}
 
-		console.log('[EditorHeatBanner] Heat data found:', heatData);
+		console.debug('[EditorHeatBanner] Heat data found:', heatData);
 
 		// Check if banner already exists and is still in the DOM
 		const existingBanner = this.activeBanners.get(file.path);
 		if (existingBanner && existingBanner.isConnected) {
-			console.log('[EditorHeatBanner] Banner already exists and is connected, skipping');
+			console.debug('[EditorHeatBanner] Banner already exists and is connected, skipping');
 			return;
 		}
 
 		// Remove existing banner if present but not connected
 		if (existingBanner) {
-			console.log('[EditorHeatBanner] Removing disconnected banner');
+			console.debug('[EditorHeatBanner] Removing disconnected banner');
 			existingBanner.remove();
 			this.activeBanners.delete(file.path);
 		}
@@ -75,13 +75,13 @@ export class EditorHeatBanner {
 			// Double-check banner doesn't exist after timeout
 			const stillExistingBanner = this.activeBanners.get(file.path);
 			if (stillExistingBanner && stillExistingBanner.isConnected) {
-				console.log('[EditorHeatBanner] Banner created by another call, skipping');
+				console.debug('[EditorHeatBanner] Banner created by another call, skipping');
 				return;
 			}
 
-			console.log('[EditorHeatBanner] Timeout fired, looking for container');
+			console.debug('[EditorHeatBanner] Timeout fired, looking for container');
 			const contentEl = view.contentEl;
-			console.log('[EditorHeatBanner] contentEl:', contentEl);
+			console.debug('[EditorHeatBanner] contentEl:', contentEl);
 
 			// Try different selectors for different view modes
 			let targetContainer: Element | null = null;
@@ -122,25 +122,25 @@ export class EditorHeatBanner {
 				selectorUsed = 'contentEl (fallback)';
 			}
 
-			console.log('[EditorHeatBanner] Using selector:', selectorUsed);
-			console.log('[EditorHeatBanner] Target container:', targetContainer);
+			console.debug('[EditorHeatBanner] Using selector:', selectorUsed);
+			console.debug('[EditorHeatBanner] Target container:', targetContainer);
 
 			// Create banner
 			const banner = this.createBanner(file.path, heatData.heatScore);
-			console.log('[EditorHeatBanner] Banner created:', banner);
+			console.debug('[EditorHeatBanner] Banner created:', banner);
 
 			// Insert banner at the top
 			if (targetContainer.firstChild) {
-				console.log('[EditorHeatBanner] Inserting before first child');
+				console.debug('[EditorHeatBanner] Inserting before first child');
 				targetContainer.insertBefore(banner, targetContainer.firstChild);
 			} else {
-				console.log('[EditorHeatBanner] Appending to container');
+				console.debug('[EditorHeatBanner] Appending to container');
 				targetContainer.appendChild(banner);
 			}
 
 			// Store reference
 			this.activeBanners.set(file.path, banner);
-			console.log('[EditorHeatBanner] Banner stored in activeBanners, total banners:', this.activeBanners.size);
+			console.debug('[EditorHeatBanner] Banner stored in activeBanners, total banners:', this.activeBanners.size);
 		}, 100);
 	}
 
@@ -211,7 +211,7 @@ export class EditorHeatBanner {
 			if (heatData.metrics.isFavorite) {
 				stats.createEl('span', {
 					cls: 'ember-heat-stat ember-favorite',
-					text: '★ Favorite'
+					text: '★ favorite'
 				});
 			}
 		}

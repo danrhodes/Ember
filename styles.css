@@ -54,19 +54,32 @@
 	animation: ember-text-flicker 2s ease-in-out infinite;
 }
 
-.ember-file.ember-on-fire::after {
+/* Hide regular heat icon when file is blazing - flames replace it */
+.ember-file.ember-on-fire .ember-heat-icon {
+	display: none;
+}
+
+/* Left flame (before text) */
+.ember-file.ember-on-fire::before {
 	content: '🔥';
-	position: relative;
-	margin-left: 4px;
+	margin-right: 4px;
 	font-size: 0.9em;
-	display: inline-block;
+	display: inline;
+	vertical-align: middle;
 	animation: ember-flame-dance 1.5s ease-in-out infinite;
+	animation-delay: 0.3s; /* Offset from right flame for varied effect */
 	filter: drop-shadow(0 0 4px rgba(255, 100, 0, 0.8));
 }
 
-/* Additional flame particles */
-.ember-file.ember-on-fire::before {
-	animation: ember-flame-glow 2s ease-in-out infinite;
+/* Right flame (after text) */
+.ember-file.ember-on-fire::after {
+	content: '🔥';
+	margin-left: 4px;
+	font-size: 0.9em;
+	display: inline;
+	vertical-align: middle;
+	animation: ember-flame-dance 1.5s ease-in-out infinite;
+	filter: drop-shadow(0 0 4px rgba(255, 100, 0, 0.8));
 }
 
 /* Tab header flames */
@@ -74,9 +87,30 @@
 	animation: ember-tab-flame-pulse 2s ease-in-out infinite;
 }
 
+/* Hide regular heat icon in tabs when blazing */
+.workspace-tab-header.ember-file.ember-on-fire .ember-heat-icon {
+	display: none;
+}
+
+/* Left flame for tab headers */
+.workspace-tab-header.ember-file.ember-on-fire::before {
+	content: '🔥';
+	margin-right: 4px;
+	display: inline;
+	vertical-align: middle;
+	font-size: 0.9em;
+	animation: ember-flame-dance 1.5s ease-in-out infinite;
+	animation-delay: 0.3s;
+	filter: drop-shadow(0 0 4px rgba(255, 100, 0, 0.8));
+}
+
+/* Right flame for tab headers */
 .workspace-tab-header.ember-file.ember-on-fire::after {
 	content: '🔥';
 	margin-left: 4px;
+	display: inline;
+	vertical-align: middle;
+	font-size: 0.9em;
 	animation: ember-flame-dance 1.5s ease-in-out infinite;
 	filter: drop-shadow(0 0 4px rgba(255, 100, 0, 0.8));
 }
@@ -136,11 +170,14 @@
 @media (prefers-reduced-motion: reduce) {
 	.ember-file.ember-on-fire,
 	.ember-file.ember-on-fire::before,
-	.ember-file.ember-on-fire::after {
+	.ember-file.ember-on-fire::after,
+	.ember-editor-heat-banner.ember-on-fire,
+	.ember-editor-heat-banner.ember-on-fire::before {
 		animation: none;
 	}
 
-	.ember-file.ember-on-fire::after {
+	.ember-file.ember-on-fire::after,
+	.ember-editor-heat-banner.ember-on-fire::before {
 		content: '🔥';
 		animation: none;
 		filter: none;
@@ -171,6 +208,14 @@
 .ember-file.ember-neutral {
 	/* No special styling - maintains default appearance */
 	opacity: 1;
+}
+
+/* ===== Minimal Mode: Accessibility-Focused (Opacity Only) ===== */
+/* ADHD-friendly visualization using only subtle opacity, no colors */
+.ember-file.ember-minimal {
+	opacity: var(--ember-minimal-opacity, 1);
+	transition: opacity var(--ember-transition-duration) ease;
+	/* No color changes - inherits theme's default text color */
 }
 
 /* ===== Emergence Mode: Full Gradient ===== */
@@ -1636,15 +1681,53 @@ button:active {
 	background: linear-gradient(90deg, rgba(220, 38, 38, 0.1), rgba(255, 100, 0, 0.05));
 }
 
+/* Hide regular heat icon when blazing */
+.ember-editor-heat-banner.ember-on-fire .ember-heat-icon {
+	display: none;
+}
+
+/* Left flame for banner */
 .ember-editor-heat-banner.ember-on-fire::before {
 	content: '🔥';
 	position: absolute;
-	left: -18px;
+	left: -16px;
 	top: 50%;
 	transform: translateY(-50%);
 	font-size: 1.2em;
-	animation: ember-flame-dance 1.5s ease-in-out infinite;
+	animation: ember-banner-flame-dance 1.5s ease-in-out infinite;
 	filter: drop-shadow(0 0 4px rgba(255, 100, 0, 0.8));
+}
+
+/* Right flame for banner */
+.ember-editor-heat-banner.ember-on-fire::after {
+	content: '🔥';
+	position: absolute;
+	right: -16px;
+	top: 50%;
+	transform: translateY(-50%);
+	font-size: 1.2em;
+	animation: ember-banner-flame-dance 1.5s ease-in-out infinite;
+	animation-delay: 0.3s;
+	filter: drop-shadow(0 0 4px rgba(255, 100, 0, 0.8));
+}
+
+@keyframes ember-banner-flame-dance {
+	0%, 100% {
+		transform: translateY(-50%) scale(1) rotate(0deg);
+		opacity: 1;
+	}
+	25% {
+		transform: translateY(-52%) scale(1.1) rotate(-5deg);
+		opacity: 0.9;
+	}
+	50% {
+		transform: translateY(-50%) scale(0.95) rotate(5deg);
+		opacity: 1;
+	}
+	75% {
+		transform: translateY(-48%) scale(1.05) rotate(-3deg);
+		opacity: 0.95;
+	}
 }
 
 @keyframes ember-banner-flame-pulse {
@@ -1676,7 +1759,10 @@ button:active {
 .ember-heat-indicator {
 	display: flex;
 	align-items: center;
+	justify-content: center;
 	font-size: 1.2em;
+	min-width: 24px;
+	height: 24px;
 }
 
 /* Heat info */

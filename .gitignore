@@ -17,6 +17,7 @@ main.js
 *.js.map
 dist/
 build/
+_release
 
 # ===== Node/NPM =====
 node_modules/

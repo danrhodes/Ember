@@ -1,4 +1,4 @@
-import { App, PluginSettingTab, Setting, Notice, Modal } from 'obsidian';
+import { App, PluginSettingTab, Setting, Notice, Modal, TFolder } from 'obsidian';
 import EmberPlugin from './main';
 import { StorageMode, VisualizationMode } from './types';
 
@@ -463,9 +463,10 @@ export class EmberSettingTab extends PluginSettingTab {
 			.setDesc('How to display heat visually')
 			.addDropdown(dropdown => dropdown
 				.addOptions({
-					[VisualizationMode.STANDARD]: 'Standard (hot/cold)',
+					[VisualizationMode.MINIMAL]: 'Minimal (accessibility mode - opacity only)',
+					[VisualizationMode.STANDARD]: 'Standard (hot/cold colors)',
 					[VisualizationMode.EMERGENCE]: 'Emergence (full gradient)',
-					[VisualizationMode.ANALYTICAL]: 'Analytical (phase 3)'
+					[VisualizationMode.ANALYTICAL]: 'Analytical (multi-dimensional)'
 				})
 				.setValue(this.plugin.settings.visualizationMode)
 				.onChange((value) => {
@@ -473,6 +474,11 @@ export class EmberSettingTab extends PluginSettingTab {
 					void this.plugin.saveSettings();
 				})
 			);
+
+		containerEl.createEl('p', {
+			text: 'Minimal mode: ADHD-friendly visualization using only subtle opacity changes (no colors or icons). Hot notes stay at full opacity, cold notes gradually fade.',
+			cls: 'setting-item-description'
+		});
 
 		new Setting(containerEl)
 			.setName('Enable animations')
@@ -873,15 +879,50 @@ export class EmberSettingTab extends PluginSettingTab {
 				})
 			);
 
+		// Manual snapshot creation
+		new Setting(containerEl)
+			.setName('Create snapshot now')
+			.setDesc('Manually create a snapshot of current heat data')
+			.addButton(button => button
+				.setButtonText('Create snapshot')
+				.setCta()
+				.onClick(async () => {
+					const plugin = this.plugin as unknown as { archivalManager?: { createSnapshot: () => Promise<void> } };
+					if (plugin.archivalManager) {
+						button.setButtonText('Creating...');
+						button.setDisabled(true);
+						try {
+							await plugin.archivalManager.createSnapshot();
+							new Notice('Heat snapshot created successfully!');
+							// Refresh settings to show updated stats
+							this.display();
+						} catch (error) {
+							new Notice('Failed to create snapshot: ' + error);
+						} finally {
+							button.setButtonText('Create snapshot');
+							button.setDisabled(false);
+						}
+					} else {
+						new Notice('Please enable the archival system first');
+					}
+				})
+			);
+
 		// Add snapshot statistics display
 		new Setting(containerEl)
 			.setName('Snapshot statistics')
 			.setHeading();
+
+		containerEl.createEl('p', {
+			text: 'Snapshots are created automatically based on the frequency setting. First snapshot is created when archival is enabled.',
+			cls: 'setting-item-description'
+		});
+
 		const statsDiv = containerEl.createDiv({ cls: 'ember-archival-stats' });
 
 		// Get statistics from archival manager
 		const plugin = this.plugin as unknown as { archivalManager?: { getStatistics: () => { totalSnapshots: number; oldestSnapshot: number | null; newestSnapshot: number | null; totalSize: number; averageFileCount: number } } };
-		if (plugin.archivalManager) {
+		if (plugin.archivalManager && this.plugin.settings.archival.enabled) {
 			const stats = plugin.archivalManager.getStatistics();
 			const statsGrid = statsDiv.createDiv({ cls: 'ember-stats-grid' });
 
@@ -891,7 +932,7 @@ export class EmberSettingTab extends PluginSettingTab {
 			this.createStatItem(statsGrid, 'Storage size', this.formatBytes(stats.totalSize));
 		} else {
 			statsDiv.createEl('p', {
-				text: 'Archival manager not initialized. Enable the archival system to see statistics.',
+				text: 'Enable the archival system above to start creating snapshots.',
 				cls: 'setting-item-description'
 			});
 		}
@@ -1137,6 +1178,39 @@ class ExclusionModal extends Modal {
 			}
 		};
 
+		// Add dropdown for path selection (only for path type)
+		if (this.type === 'path') {
+			const paths = this.getExistingPaths();
+
+			new Setting(contentEl)
+				.setName('Select from existing paths')
+				.setDesc('Choose a file or folder from your vault')
+				.addDropdown(dropdown => {
+					dropdown.addOption('', '-- Select a path --');
+
+					// Add folders
+					paths.folders.forEach(folder => {
+						dropdown.addOption(folder, `📁 ${folder}`);
+					});
+
+					// Add separator
+					if (paths.folders.length > 0 && paths.files.length > 0) {
+						dropdown.addOption('---', '---');
+					}
+
+					// Add files (limit to first 50 for performance)
+					paths.files.slice(0, 50).forEach(file => {
+						dropdown.addOption(file, `📄 ${file}`);
+					});
+
+					dropdown.onChange((value) => {
+						if (value && value !== '---') {
+							inputEl.value = value;
+						}
+					});
+				});
+		}
+
 		new Setting(contentEl)
 			.setName('Pattern')
 			.setDesc(this.getDescription())
@@ -1172,6 +1246,38 @@ class ExclusionModal extends Modal {
 					this.close();
 				})
 			);
+	}
+
+	/**
+	 * Get existing file and folder paths from the vault
+	 */
+	private getExistingPaths(): { files: string[]; folders: string[] } {
+		const files: string[] = [];
+		const folders: string[] = [];
+
+		const allFiles = this.app.vault.getFiles();
+		const allFolders = this.app.vault.getAllLoadedFiles()
+			.filter(f => f instanceof TFolder) as TFolder[];
+
+		// Get all markdown files
+		allFiles.forEach(file => {
+			if (file.extension === 'md') {
+				files.push(file.path);
+			}
+		});
+
+		// Get all folders
+		allFolders.forEach(folder => {
+			if (folder.path !== '/') {
+				folders.push(folder.path);
+			}
+		});
+
+		// Sort alphabetically
+		files.sort();
+		folders.sort();
+
+		return { files, folders };
 	}
 
 	onClose(): void {

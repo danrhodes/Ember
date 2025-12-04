@@ -205,6 +205,8 @@ export class VisualRenderer {
 				this.applyEmergenceMode(element, heatScore);
 			} else if (this.settings.visualizationMode === VisualizationMode.ANALYTICAL) {
 				this.applyAnalyticalMode(element, heatScore);
+			} else if (this.settings.visualizationMode === VisualizationMode.MINIMAL) {
+				this.applyMinimalMode(element, heatScore);
 			}
 		}
 	}
@@ -228,8 +230,7 @@ export class VisualRenderer {
 		const iconEl = document.createElement('span');
 		iconEl.addClass('ember-heat-icon');
 		iconEl.textContent = icon;
-		iconEl.style.color = color;
-		iconEl.style.marginRight = '4px';
+		iconEl.setCssProps({ 'color': color, 'margin-right': '4px' });
 		iconEl.setAttribute('title', `Heat: ${Math.round(heatScore)} (${heatLevel})`);
 
 		// Insert icon at the beginning of the tree item
@@ -443,6 +444,26 @@ export class VisualRenderer {
 		element.setCssStyles({
 			color: color,
 			fontWeight: fontWeight
+		});
+	}
+
+	/**
+	 * Apply Minimal mode visualization
+	 * Accessibility-focused mode using only opacity (no colors)
+	 * Hot notes remain at full opacity, cold notes fade subtly
+	 */
+	private applyMinimalMode(element: HTMLElement, heatScore: number): void {
+		element.addClass('ember-minimal');
+
+		// Calculate opacity based on heat score
+		// Heat 0-100 maps to opacity 0.3-1.0 (never fully invisible for accessibility)
+		const minOpacity = 0.3;
+		const maxOpacity = 1.0;
+		const opacity = minOpacity + (heatScore / 100) * (maxOpacity - minOpacity);
+
+		// Use CSS custom property for opacity - styling handled in CSS
+		element.setCssProps({
+			'--ember-minimal-opacity': opacity.toFixed(2)
 		});
 	}
 
