@@ -112,6 +112,84 @@ if %ERRORLEVEL% EQU 0 (
     echo Release files ready in: %RELEASE_DIR%
     echo ========================================
     echo.
+
+    REM Git operations
+    echo.
+    echo ========================================
+    echo Creating Git Release
+    echo ========================================
+    echo.
+
+    REM Stage the updated manifest.json
+    echo Staging manifest.json...
+    git add manifest.json
+
+    REM Stage the entire release folder for this version
+    echo Staging release folder...
+    git add _release\%NEW_VERSION%\
+
+    REM Create commit
+    echo Creating commit...
+    git commit -m "Release %NEW_VERSION%"
+
+    if %ERRORLEVEL% EQU 0 (
+        echo Commit created successfully
+
+        REM Create git tag
+        echo.
+        echo Creating tag %NEW_VERSION%...
+        git tag -a %NEW_VERSION% -m "Release version %NEW_VERSION%"
+
+        if %ERRORLEVEL% EQU 0 (
+            echo Tag created successfully
+
+            REM Push commit and tag
+            echo.
+            echo Pushing to GitHub...
+            git push origin main
+
+            if %ERRORLEVEL% EQU 0 (
+                echo.
+                echo Pushing tag...
+                git push origin %NEW_VERSION%
+
+                if %ERRORLEVEL% EQU 0 (
+                    echo.
+                    echo ========================================
+                    echo Release Complete!
+                    echo ========================================
+                    echo.
+                    echo Version %NEW_VERSION% has been:
+                    echo   - Committed to repository
+                    echo   - Tagged as %NEW_VERSION%
+                    echo   - Pushed to GitHub
+                    echo.
+                    echo View release at:
+                    echo https://github.com/danrhodes/Ember/releases/tag/%NEW_VERSION%
+                    echo.
+                ) else (
+                    echo.
+                    echo ERROR: Failed to push tag to GitHub
+                    echo You can manually push with: git push origin %NEW_VERSION%
+                    echo.
+                )
+            ) else (
+                echo.
+                echo ERROR: Failed to push commit to GitHub
+                echo You can manually push with: git push origin main
+                echo.
+            )
+        ) else (
+            echo.
+            echo ERROR: Failed to create Git tag
+            echo.
+        )
+    ) else (
+        echo.
+        echo ERROR: Failed to create Git commit
+        echo.
+    )
+
     echo.
 ) else (
     echo.
