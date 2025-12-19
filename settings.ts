@@ -921,14 +921,14 @@ export class EmberSettingTab extends PluginSettingTab {
 		const statsDiv = containerEl.createDiv({ cls: 'ember-archival-stats' });
 
 		// Get statistics from archival manager
-		const plugin = this.plugin as unknown as { archivalManager?: { getStatistics: () => { totalSnapshots: number; oldestSnapshot: number | null; newestSnapshot: number | null; totalSize: number; averageFileCount: number } } };
+		const plugin = this.plugin as unknown as { archivalManager?: { getStatistics: () => { count: number; oldestDate: string | null; latestDate: string | null; totalSize: number; averageFileCount: number } } };
 		if (plugin.archivalManager && this.plugin.settings.archival.enabled) {
 			const stats = plugin.archivalManager.getStatistics();
 			const statsGrid = statsDiv.createDiv({ cls: 'ember-stats-grid' });
 
-			this.createStatItem(statsGrid, 'Total snapshots', stats.totalSnapshots.toString());
-			this.createStatItem(statsGrid, 'Oldest snapshot', this.formatDate(stats.oldestSnapshot));
-			this.createStatItem(statsGrid, 'Newest snapshot', this.formatDate(stats.newestSnapshot));
+			this.createStatItem(statsGrid, 'Total snapshots', stats.count.toString());
+			this.createStatItem(statsGrid, 'Oldest snapshot', stats.oldestDate || 'Never');
+			this.createStatItem(statsGrid, 'Newest snapshot', stats.latestDate || 'Never');
 			this.createStatItem(statsGrid, 'Storage size', this.formatBytes(stats.totalSize));
 		} else {
 			statsDiv.createEl('p', {

@@ -153,12 +153,12 @@ export default class EmberPlugin extends Plugin {
 		this.addSettingTab(new EmberSettingTab(this.app, this));
 
 		// 18. Add ribbon icon to open Popular Files view
-		this.addRibbonIcon('flame', 'Open popular files', () => {
+		this.addRibbonIcon('activity', 'Open popular files', () => {
 			void this.activatePopularFilesView();
 		});
 
 		// 19. Add ribbon icon to open Hot Files view
-		this.addRibbonIcon('fire', 'Open hot files', () => {
+		this.addRibbonIcon('flame', 'Open hot files', () => {
 			void this.activateHotFilesView();
 		});
 

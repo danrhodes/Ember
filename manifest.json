@@ -2,7 +2,7 @@
 	"id": "ember",
 	"name": "Ember",
 	"version":"1.5.3",
-	"minAppVersion": "0.15.0",
+	"minAppVersion": "1.10.6",
 	"description": "Visualize note activity through a dynamic heat system where notes glow with frequent access and cool over time, affecting their visual appearance across multiple views.",
 	"author": "Dan Rhodes",
 	"authorUrl": "https://github.com/danrhodes",

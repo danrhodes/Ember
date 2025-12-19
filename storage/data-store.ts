@@ -152,10 +152,35 @@ export class DataStore {
 			const backupDir = `${pluginDir}/backups`;
 
 			// Ensure backup directory exists
+			let dirExists = false;
 			try {
-				await adapter.stat(backupDir);
+				const dirStat = await adapter.stat(backupDir);
+				// If stat succeeds and it's a folder, we're good
+				if (dirStat && dirStat.type === 'folder') {
+					dirExists = true;
+				} else {
+					throw new Error('Backup path exists but is not a folder');
+				}
 			} catch {
-				await adapter.mkdir(backupDir);
+				// Directory doesn't exist, create it
+				try {
+					await adapter.mkdir(backupDir);
+					// Verify the directory was created
+					const verifyDir = await adapter.stat(backupDir);
+					if (verifyDir && verifyDir.type === 'folder') {
+						dirExists = true;
+					}
+				} catch (mkdirError) {
+					// If mkdir fails, log and return early
+					console.error('Ember: Failed to create backup directory:', mkdirError);
+					return;
+				}
+			}
+
+			// Safety check - if directory still doesn't exist, abort
+			if (!dirExists) {
+				console.error('Ember: Backup directory does not exist and could not be created');
+				return;
 			}
 
 			// Get existing heat data
