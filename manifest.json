@@ -4,7 +4,7 @@
 	"version":"1.5.3",
 	"minAppVersion": "1.10.6",
 	"description": "Visualize note activity through a dynamic heat system where notes glow with frequent access and cool over time, affecting their visual appearance across multiple views.",
-	"author": "Dan Rhodes",
+	"author": "Daniel Rhodes",
 	"authorUrl": "https://github.com/danrhodes",
 	"isDesktopOnly": false
 }
